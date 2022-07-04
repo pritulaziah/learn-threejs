@@ -9,6 +9,8 @@ class Canvas {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
+  mesh: THREE.Object3D;
+  clock: THREE.Clock
 
   constructor() {
     // Sizes
@@ -26,11 +28,20 @@ class Canvas {
       0.1,
       1000
     );
-    this.camera.position.z = 3;
+    // Object
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+      wireframe: true,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    this.mesh = mesh;
+    this.scene.add(mesh);
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
-    document.body.appendChild(this.renderer.domElement);
-
+    // Clock
+    this.clock = new THREE.Clock()
+    // Run init
     this.init();
   }
 
@@ -50,17 +61,8 @@ class Canvas {
     this.renderer.render(this.scene, this.camera);
   };
 
-  addMesh() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      wireframe: true,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    this.scene.add(mesh);
-  }
-
   onResize = () => {
+    // Update sizes
     this.sizes.width = window.innerWidth;
     this.sizes.height = window.innerHeight;
 
@@ -74,12 +76,26 @@ class Canvas {
     this.render();
   };
 
-  init = () => {
-    this.addMesh();
-    this.setSize();
-    this.render();
+  animate = () => {
+    requestAnimationFrame(this.animate);
+    const elapsedTime = this.clock.getElapsedTime();
 
+    this.mesh.rotation.x = elapsedTime;
+    this.mesh.rotation.y = elapsedTime;
+    // this.camera.position.x = Math.sin(elapsedTime);
+    // this.camera.position.y = Math.cos(elapsedTime);
+    // this.camera.lookAt(this.mesh.position)
+
+    this.render();
+  };
+
+  init = () => {
+    this.camera.position.z = 3;
+    document.body.appendChild(this.renderer.domElement);
+    this.setSize();
     window.addEventListener("resize", this.onResize);
+    this.render();
+    this.animate();
   };
 }
 
