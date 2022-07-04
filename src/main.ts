@@ -34,15 +34,11 @@ class Canvas {
       color: 0xff0000,
       wireframe: true,
     });
-    const mesh = new THREE.Mesh(geometry, material);
-    this.mesh = mesh;
-    this.scene.add(mesh);
+    this.mesh = new THREE.Mesh(geometry, material);
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
     // Clock
     this.clock = new THREE.Clock()
-    // Run init
-    this.init();
   }
 
   get width() {
@@ -91,6 +87,7 @@ class Canvas {
 
   init = () => {
     this.camera.position.z = 3;
+    this.scene.add(this.mesh);
     document.body.appendChild(this.renderer.domElement);
     this.setSize();
     window.addEventListener("resize", this.onResize);
@@ -99,4 +96,4 @@ class Canvas {
   };
 }
 
-new Canvas();
+new Canvas().init();
