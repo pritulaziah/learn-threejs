@@ -1,6 +1,17 @@
 import "./style.css";
 import * as THREE from "three";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+declare global {
+  interface Document {
+    webkitExitFullscreen?: () => Promise<void>;
+    webkitFullscreenElement?: Element;
+  }
+
+  interface HTMLElement {
+    webkitRequestFullscreen?: () => Promise<void>;
+  }
+}
 
 class Canvas {
   sizes: {
@@ -11,8 +22,8 @@ class Canvas {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   mesh: THREE.Object3D;
-  clock: THREE.Clock
-  controls: OrbitControls
+  clock: THREE.Clock;
+  controls: OrbitControls;
 
   constructor() {
     // Sizes
@@ -40,9 +51,9 @@ class Canvas {
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
     // Clock
-    this.clock = new THREE.Clock()
+    this.clock = new THREE.Clock();
     // Controls
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
   get width() {
@@ -76,6 +87,26 @@ class Canvas {
     this.render();
   };
 
+  onOpenFullscreen = () => {
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+
+    if (!fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen()
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      } else {
+        // nothing
+      }
+    }
+  };
+
   animate = () => {
     requestAnimationFrame(this.animate);
     const elapsedTime = this.clock.getElapsedTime();
@@ -86,17 +117,19 @@ class Canvas {
     // this.camera.position.y = Math.cos(elapsedTime);
     // this.camera.lookAt(this.mesh.position)
 
-    this.controls.update()
+    this.controls.update();
 
     this.render();
   };
 
   init = () => {
+    this.controls.enableDamping = true;
     this.camera.position.z = 3;
     this.scene.add(this.mesh);
     document.body.appendChild(this.renderer.domElement);
     this.setSize();
     window.addEventListener("resize", this.onResize);
+    window.addEventListener("dblclick", this.onOpenFullscreen);
     this.render();
     this.animate();
   };
