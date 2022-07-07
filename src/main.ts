@@ -1,5 +1,6 @@
 import "./style.css";
 import * as THREE from "three";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 class Canvas {
   sizes: {
@@ -11,6 +12,7 @@ class Canvas {
   renderer: THREE.WebGLRenderer;
   mesh: THREE.Object3D;
   clock: THREE.Clock
+  controls: OrbitControls
 
   constructor() {
     // Sizes
@@ -39,6 +41,8 @@ class Canvas {
     this.renderer = new THREE.WebGLRenderer();
     // Clock
     this.clock = new THREE.Clock()
+    // Controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
   }
 
   get width() {
@@ -82,6 +86,8 @@ class Canvas {
     // this.camera.position.y = Math.cos(elapsedTime);
     // this.camera.lookAt(this.mesh.position)
 
+    this.controls.update()
+
     this.render();
   };
 
@@ -96,4 +102,5 @@ class Canvas {
   };
 }
 
-new Canvas().init();
+const canvas = new Canvas();
+canvas.init();
