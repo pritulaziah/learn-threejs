@@ -25,6 +25,10 @@ class Canvas {
   clock: THREE.Clock;
   controls: OrbitControls;
 
+  static getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+  }
+
   constructor() {
     // Sizes
     const { innerWidth, innerHeight } = window;
@@ -42,7 +46,17 @@ class Canvas {
       1000
     );
     // Object
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const count = 50 * 3 * 3;
+    const positionsArray = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      positionsArray[i] = Canvas.getRandomArbitrary(-2, 2);
+    }
+
+    const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position',positionsAttribute);
+
     const material = new THREE.MeshBasicMaterial({
       color: 0xff0000,
       wireframe: true,
@@ -109,10 +123,9 @@ class Canvas {
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    const elapsedTime = this.clock.getElapsedTime();
-
-    this.mesh.rotation.x = elapsedTime;
-    this.mesh.rotation.y = elapsedTime;
+    // const elapsedTime = this.clock.getElapsedTime();
+    // this.mesh.rotation.x = elapsedTime * 0.3;
+    // this.mesh.rotation.y = elapsedTime * 0.3;
     // this.camera.position.x = Math.sin(elapsedTime);
     // this.camera.position.y = Math.cos(elapsedTime);
     // this.camera.lookAt(this.mesh.position)
