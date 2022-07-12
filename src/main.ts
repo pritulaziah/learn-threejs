@@ -1,35 +1,30 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
-declare global {
-  interface Document {
-    webkitExitFullscreen?: () => Promise<void>;
-    webkitFullscreenElement?: Element;
-  }
-
-  interface HTMLElement {
-    webkitRequestFullscreen?: () => Promise<void>;
-  }
-}
+import * as dat from "dat.gui";
+import Configuration from "./classes/Configuracion";
 
 class Canvas {
-  sizes: {
+  private opts: Configuration;
+  private sizes: {
     width: number;
     height: number;
   };
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
-  mesh: THREE.Object3D;
-  clock: THREE.Clock;
-  controls: OrbitControls;
+  private scene: THREE.Scene;
+  private camera: THREE.PerspectiveCamera;
+  private renderer: THREE.WebGLRenderer;
+  private mesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+  // clock: THREE.Clock;
+  private controls: OrbitControls;
+  private gui: dat.GUI;
 
-  static getRandomArbitrary(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-  }
+  // private static getRandomArbitrary(min: number, max: number) {
+  //   return Math.random() * (max - min) + min;
+  // }
 
   constructor() {
+    // Configuration
+    this.opts = new Configuration();
     // Sizes
     const { innerWidth, innerHeight } = window;
     this.sizes = {
@@ -46,26 +41,17 @@ class Canvas {
       1000
     );
     // Object
-    const count = 50 * 3 * 3;
-    const positionsArray = new Float32Array(count);
-
-    for (let i = 0; i < count; i++) {
-      positionsArray[i] = Canvas.getRandomArbitrary(-2, 2);
-    }
-
-    const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position',positionsAttribute);
-
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      wireframe: true,
+      color: this.opts.color,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
     // Clock
-    this.clock = new THREE.Clock();
+    // this.clock = new THREE.Clock();
+    //Gui
+    this.gui = new dat.GUI();
     // Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
@@ -78,15 +64,15 @@ class Canvas {
     return this.sizes.height;
   }
 
-  setSize = () => {
+  private setSize = () => {
     this.renderer.setSize(this.width, this.height);
   };
 
-  render = () => {
+  private render = () => {
     this.renderer.render(this.scene, this.camera);
   };
 
-  onResize = () => {
+  private onResize = () => {
     // Update sizes
     this.sizes.width = window.innerWidth;
     this.sizes.height = window.innerHeight;
@@ -101,27 +87,28 @@ class Canvas {
     this.render();
   };
 
-  onOpenFullscreen = () => {
-    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+  private onOpenFullscreen = () => {
+    const fullscreenElement =
+      document.fullscreenElement || document.webkitFullscreenElement;
 
     if (!fullscreenElement) {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
       } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen()
+        document.documentElement.webkitRequestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen()
+        document.webkitExitFullscreen();
       } else {
         // nothing
       }
     }
   };
 
-  animate = () => {
+  private animate = () => {
     requestAnimationFrame(this.animate);
     // const elapsedTime = this.clock.getElapsedTime();
     // this.mesh.rotation.x = elapsedTime * 0.3;
@@ -135,7 +122,21 @@ class Canvas {
     this.render();
   };
 
+  private createDebug = () => {
+    const cube = this.gui.addFolder("Cube");
+    cube.add(this.mesh.position, "y", -3, 3, 0.01);
+    cube.add(this.mesh.position, "x", -3, 3, 0.01);
+    cube.add(this.mesh.position, "z", -3, 3, 0.01);
+    cube.add(this.mesh, "visible");
+    cube.add(this.mesh.material, "wireframe");
+    cube.addColor(this.opts, "color").onChange((color) => {
+      this.mesh.material.color = new THREE.Color(color);
+    });
+    cube.open();
+  };
+
   init = () => {
+    this.createDebug();
     this.controls.enableDamping = true;
     this.camera.position.z = 3;
     this.scene.add(this.mesh);
