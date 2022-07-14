@@ -44,6 +44,7 @@ class Canvas {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({
       color: this.opts.color,
+      map: this.opts.colorTexture,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     // Renderer
@@ -133,6 +134,14 @@ class Canvas {
       this.mesh.material.color = new THREE.Color(color);
     });
     cube.open();
+
+    const texture = this.gui.addFolder('Texture');
+    texture.add(this.opts.colorTexture, 'rotation', -2 * Math.PI, 2 * Math.PI, Math.PI * 0.25);
+    texture.add(this.opts.colorTexture.center, 'x', 0, 1, 0.1).name('center x');
+    texture.add(this.opts.colorTexture.center, 'y', 0, 1, 0.1).name('center y');
+    texture.add(this.opts.colorTexture.repeat, 'x', 0, 5, 1).name('repeat x');
+    texture.add(this.opts.colorTexture.repeat, 'y', 0, 5, 1).name('repeat y');
+    texture.open();
   };
 
   init = () => {
