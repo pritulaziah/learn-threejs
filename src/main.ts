@@ -2,10 +2,13 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
-import Configuration from "./classes/Configuracion";
+import DoorColorImagePath from "./static/textures/door/color.jpg";
+import CheckerboardImagePath from "./static/textures/checkerboard-8x8.png";
+import MinecraftImagePath from "./static/textures/minecraft.png";
+
+type Textures = "door" | "checkerboard" | "minecraft";
 
 class Canvas {
-  private opts: Configuration;
   private sizes: {
     width: number;
     height: number;
@@ -17,14 +20,30 @@ class Canvas {
   // clock: THREE.Clock;
   private controls: OrbitControls;
   private gui: dat.GUI;
+  private opts: {
+    texture: Textures;
+    rotation: number;
+    repeat: { x: number; y: number };
+    center: { x: number; y: number };
+  };
 
   // private static getRandomArbitrary(min: number, max: number) {
   //   return Math.random() * (max - min) + min;
   // }
 
+  private static textures: { [key in Textures]: string } = {
+    door: DoorColorImagePath,
+    minecraft: MinecraftImagePath,
+    checkerboard: CheckerboardImagePath,
+  };
+
   constructor() {
-    // Configuration
-    this.opts = new Configuration();
+    this.opts = {
+      texture: "door",
+      rotation: 0,
+      repeat: { x: 1, y: 1 },
+      center: { x: 0.5, y: 0.5 },
+    };
     // Sizes
     const { innerWidth, innerHeight } = window;
     this.sizes = {
@@ -42,10 +61,7 @@ class Canvas {
     );
     // Object
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      color: this.opts.color,
-      map: this.opts.colorTexture,
-    });
+    const material = new THREE.MeshBasicMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
@@ -130,17 +146,58 @@ class Canvas {
     cube.add(this.mesh.position, "z", -3, 3, 0.01);
     cube.add(this.mesh, "visible");
     cube.add(this.mesh.material, "wireframe");
-    cube.addColor(this.opts, "color").onChange((color) => {
-      this.mesh.material.color = new THREE.Color(color);
-    });
     cube.open();
 
-    const texture = this.gui.addFolder('Texture');
-    texture.add(this.opts.colorTexture, 'rotation', -2 * Math.PI, 2 * Math.PI, Math.PI * 0.25);
-    texture.add(this.opts.colorTexture.center, 'x', 0, 1, 0.1).name('center x');
-    texture.add(this.opts.colorTexture.center, 'y', 0, 1, 0.1).name('center y');
-    texture.add(this.opts.colorTexture.repeat, 'x', 0, 5, 1).name('repeat x');
-    texture.add(this.opts.colorTexture.repeat, 'y', 0, 5, 1).name('repeat y');
+    const texture = this.gui.addFolder("Texture");
+    texture
+      .add(this.opts, "texture", Object.keys(Canvas.textures))
+      .onChange((textureName: Textures) => {
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(Canvas.textures[textureName]);
+        texture.center.x = 0.5;
+        texture.center.y = 0.5;
+        texture.rotation = this.opts.rotation;
+        texture.repeat.x = this.opts.repeat.x;
+        texture.repeat.y = this.opts.repeat.y;
+        texture.minFilter = THREE.NearestFilter;
+        texture.magFilter = THREE.NearestFilter;
+        texture.generateMipmaps = false;
+        this.mesh.material.map = texture;
+      })
+      .setValue("door");
+
+    if (this.mesh.material.map) {
+      texture
+        .add(this.opts, "rotation", -2 * Math.PI, 2 * Math.PI, Math.PI * 0.25)
+        .onChange((value: number) => {
+          this.mesh.material.map!.rotation = value;
+        });
+      texture
+        .add(this.opts.repeat, "x", 0, 5, 1)
+        .onChange((value: number) => {
+          this.mesh.material.map!.repeat.x = value;
+        })
+        .name("repeat x");
+      texture
+        .add(this.opts.repeat, "y", 0, 5, 1)
+        .onChange((value: number) => {
+          this.mesh.material.map!.repeat.y = value;
+        })
+        .name("repeat y");
+      texture
+        .add(this.opts.center, "x", 0, 1, 0.1)
+        .onChange((value: number) => {
+          this.mesh.material.map!.center.x = value;
+        })
+        .name("center x");
+      texture
+        .add(this.opts.center, "y", 0, 1, 0.1)
+        .onChange((value: number) => {
+          this.mesh.material.map!.center.y = value;
+        })
+        .name("center y");
+    }
+
     texture.open();
   };
 
