@@ -3,10 +3,29 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import DoorColorImagePath from "./static/textures/door/color.jpg";
-import CheckerboardImagePath from "./static/textures/checkerboard-8x8.png";
-import MinecraftImagePath from "./static/textures/minecraft.png";
+import AlphaImagePath from "./static/textures/door/alpha.jpg";
+import AmbientOcclusionImagePath from "./static/textures/door/ambientOcclusion.jpg";
+import HeightImagePath from "./static/textures/door/height.jpg";
+import MetalnessImagePath from "./static/textures/door/metalness.jpg";
+import NormalImagePath from "./static/textures/door/normal.jpg";
+import RoughnessImagePath from "./static/textures/door/roughness.jpg";
 
-type Textures = "none" | "door" | "checkerboard" | "minecraft";
+type Textures =
+  | "none"
+  | "door"
+  | "ambientOcclusion"
+  | "alpha"
+  | "height"
+  | "metalness"
+  | "normal"
+  | "roughness";
+
+enum ObjectTypes {
+  Sphere = "sphere",
+  Box = "box",
+  Plane = "plane",
+  Torus = "torus",
+}
 
 class Canvas {
   private sizes: {
@@ -16,36 +35,39 @@ class Canvas {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
-  private mesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-  // clock: THREE.Clock;
+  clock: THREE.Clock;
   private controls: OrbitControls;
   private gui: dat.GUI;
   private opts: {
     texture: Textures;
-    rotation: number;
-    repeat: { x: number; y: number };
-    center: { x: number; y: number };
     color: string;
+    wireframe: boolean;
   };
-
-  // private static getRandomArbitrary(min: number, max: number) {
-  //   return Math.random() * (max - min) + min;
-  // }
+  private objects: {
+    [key in ObjectTypes]?: THREE.Mesh<
+      | THREE.SphereBufferGeometry
+      | THREE.PlaneBufferGeometry
+      | THREE.TorusBufferGeometry,
+      THREE.MeshBasicMaterial
+    >;
+  };
 
   private static textures: { [key in Textures]: string | null } = {
     none: null,
     door: DoorColorImagePath,
-    minecraft: MinecraftImagePath,
-    checkerboard: CheckerboardImagePath,
+    alpha: AlphaImagePath,
+    ambientOcclusion: AmbientOcclusionImagePath,
+    height: HeightImagePath,
+    normal: NormalImagePath,
+    metalness: MetalnessImagePath,
+    roughness: RoughnessImagePath,
   };
 
   constructor() {
     this.opts = {
       texture: "none",
-      rotation: 0,
-      repeat: { x: 1, y: 1 },
-      center: { x: 0.5, y: 0.5 },
       color: "#fff",
+      wireframe: false,
     };
     // Sizes
     const { innerWidth, innerHeight } = window;
@@ -63,13 +85,26 @@ class Canvas {
       1000
     );
     // Object
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial();
-    this.mesh = new THREE.Mesh(geometry, material);
+    this.objects = {
+      // box: new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material),
+      [ObjectTypes.Sphere]: new THREE.Mesh(
+        new THREE.SphereBufferGeometry(0.5, 16, 16),
+        material
+      ),
+      [ObjectTypes.Plane]: new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(1, 1),
+        material
+      ),
+      [ObjectTypes.Torus]: new THREE.Mesh(
+        new THREE.TorusBufferGeometry(0.3, 0.2, 16, 32),
+        material
+      ),
+    };
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
     // Clock
-    // this.clock = new THREE.Clock();
+    this.clock = new THREE.Clock();
     //Gui
     this.gui = new dat.GUI();
     // Controls
@@ -84,13 +119,13 @@ class Canvas {
     return this.sizes.height;
   }
 
-  private setSize = () => {
+  private setSize() {
     this.renderer.setSize(this.width, this.height);
-  };
+  }
 
-  private render = () => {
+  private render() {
     this.renderer.render(this.scene, this.camera);
-  };
+  }
 
   private onResize = () => {
     // Update sizes
@@ -130,111 +165,86 @@ class Canvas {
 
   private animate = () => {
     requestAnimationFrame(this.animate);
-    // const elapsedTime = this.clock.getElapsedTime();
-    // this.mesh.rotation.x = elapsedTime * 0.3;
-    // this.mesh.rotation.y = elapsedTime * 0.3;
-    // this.camera.position.x = Math.sin(elapsedTime);
-    // this.camera.position.y = Math.cos(elapsedTime);
-    // this.camera.lookAt(this.mesh.position)
+    const elapsedTime = this.clock.getElapsedTime();
+
+    for (const object of Object.values(this.objects)) {
+      object.rotation.x = elapsedTime * 0.3;
+      object.rotation.y = elapsedTime * 0.3;
+    }
 
     this.controls.update();
-
     this.render();
   };
 
-  private createDebug = () => {
-    const cube = this.gui.addFolder("Cube");
-    cube.add(this.mesh.position, "y", -3, 3, 0.01);
-    cube.add(this.mesh.position, "x", -3, 3, 0.01);
-    cube.add(this.mesh.position, "z", -3, 3, 0.01);
-    cube.add(this.mesh, "visible");
-    cube.add(this.mesh.material, "wireframe");
-    cube.addColor(this.opts, "color").onChange((color) => {
-      this.mesh.material.color = new THREE.Color(color);
+  private createDebug() {
+    const objects = this.gui.addFolder("Objects");
+    objects.add(this.opts, "wireframe").onChange((value: boolean) => {
+      for (const object of Object.values(this.objects)) {
+        object.material.wireframe = value;
+      }
     });
-    cube.open();
+    objects.addColor(this.opts, "color").onChange((value) => {
+      const color = new THREE.Color(value);
+
+      for (const object of Object.values(this.objects)) {
+        object.material.color = color;
+      }
+    });
+    objects.open();
 
     const texture = this.gui.addFolder("Texture");
     texture
       .add(this.opts, "texture", Object.keys(Canvas.textures))
       .onChange((textureName: Textures) => {
         const textureUrl = Canvas.textures[textureName];
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
 
-        if (textureUrl) {
-          const textureLoader = new THREE.TextureLoader();
-          const texture = textureLoader.load(textureUrl);
-          texture.center.x = this.opts.center.x;
-          texture.center.y = this.opts.center.y;
-          texture.rotation = this.opts.rotation;
-          texture.repeat.x = this.opts.repeat.x;
-          texture.repeat.y = this.opts.repeat.y;
+        if (texture) {
+          texture.center.x = 0.5;
+          texture.center.y = 0.5;
+          texture.repeat.x = 1;
+          texture.repeat.y = 1;
           texture.minFilter = THREE.NearestFilter;
           texture.magFilter = THREE.NearestFilter;
           texture.generateMipmaps = false;
-          this.mesh.material.map = texture;
-          this.mesh.material.needsUpdate = true;
-        } else {
-          this.mesh.material.map = null;
-          this.mesh.material.needsUpdate = true;
+        }
+
+        for (const object of Object.values(this.objects)) {
+          object.material.map = texture;
+          object.material.needsUpdate = true;
         }
       })
       .setValue("none");
-
-    texture
-      .add(this.opts, "rotation", -2 * Math.PI, 2 * Math.PI, Math.PI * 0.25)
-      .onChange((value: number) => {
-        if (this.mesh.material.map) {
-          this.mesh.material.map.rotation = value;
-        }
-      });
-    texture
-      .add(this.opts.repeat, "x", 0, 5, 1)
-      .onChange((value: number) => {
-        if (this.mesh.material.map) {
-          this.mesh.material.map.repeat.x = value;
-        }
-      })
-      .name("repeat x");
-    texture
-      .add(this.opts.repeat, "y", 0, 5, 1)
-      .onChange((value: number) => {
-        if (this.mesh.material.map) {
-          this.mesh.material.map.repeat.y = value;
-        }
-      })
-      .name("repeat y");
-    texture
-      .add(this.opts.center, "x", 0, 1, 0.1)
-      .onChange((value: number) => {
-        if (this.mesh.material.map) {
-          this.mesh.material.map.center.x = value;
-        }
-      })
-      .name("center x");
-    texture
-      .add(this.opts.center, "y", 0, 1, 0.1)
-      .onChange((value: number) => {
-        if (this.mesh.material.map) {
-          this.mesh.material.map.center.y = value;
-        }
-      })
-      .name("center y");
-
     texture.open();
-  };
+  }
 
-  init = () => {
+  init() {
     this.createDebug();
     this.controls.enableDamping = true;
     this.camera.position.z = 3;
-    this.scene.add(this.mesh);
+
+    for (const [name, object] of Object.entries(this.objects)) {
+      switch (name) {
+        case ObjectTypes.Sphere:
+          object.position.x = -1.5;
+          break;
+        case ObjectTypes.Torus:
+          object.position.x = 1.5;
+          break;
+        default:
+          break;
+      }
+      this.scene.add(object);
+    }
+
     document.body.appendChild(this.renderer.domElement);
     this.setSize();
     window.addEventListener("resize", this.onResize);
     window.addEventListener("dblclick", this.onOpenFullscreen);
     this.render();
     this.animate();
-  };
+  }
 }
 
 const canvas = new Canvas();
