@@ -1,9 +1,10 @@
 import * as THREE from "three";
-import My3DObject from "./My3DObject";
+import MyObject3D, { MyMaterials } from "./MyObject3D";
 
-class Torus extends My3DObject {
-  constructor(material: THREE.MeshBasicMaterial) {
-    super(material, new THREE.TorusBufferGeometry(0.3, 0.2, 16, 32));
+class Torus extends MyObject3D {
+  constructor(material: MyMaterials) {
+    const geometry = new THREE.TorusBufferGeometry(0.3, 0.2, 16, 32);
+    super(geometry, material);
     this.object.position.x = 1.5;
   }
 

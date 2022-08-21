@@ -1,9 +1,10 @@
 import * as THREE from "three";
-import My3DObject from "./My3DObject";
+import MyObject3D, { MyMaterials } from "./MyObject3D";
 
-class Sphere extends My3DObject {
-  constructor(material: THREE.MeshBasicMaterial) {
-    super(material, new THREE.SphereBufferGeometry(0.5, 16, 16));
+class Sphere extends MyObject3D {
+  constructor(material: MyMaterials) {
+    const geometry = new THREE.SphereBufferGeometry(0.5, 16, 16);
+    super(geometry, material);
     this.object.position.x = -1.5;
   }
 

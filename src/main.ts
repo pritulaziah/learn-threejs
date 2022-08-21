@@ -2,30 +2,16 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
-import DoorColorImagePath from "./static/textures/door/color.jpg";
-import AlphaImagePath from "./static/textures/door/alpha.jpg";
-import AmbientOcclusionImagePath from "./static/textures/door/ambientOcclusion.jpg";
-import HeightImagePath from "./static/textures/door/height.jpg";
-import MetalnessImagePath from "./static/textures/door/metalness.jpg";
-import NormalImagePath from "./static/textures/door/normal.jpg";
-import RoughnessImagePath from "./static/textures/door/roughness.jpg";
-// import Matcap1ImagePath from "./static/textures/matcaps/1.png";
-// import Gradient3ImagePath from "./static/textures/gradients/3.jpg";
 import Torus from "./classes/Torus";
 import Sphere from "./classes/Sphere";
 import Plane from "./classes/Plane";
-import My3DObject from "./classes/My3DObject";
+import MyObject3D, { MyMaterials } from "./classes/MyObject3D";
 
-type Textures =
-  | "none"
-  | "door"
-  | "ambientOcclusion"
-  | "height"
-  | "metalness"
-  | "normal"
-  | "roughness";
-
-type AlphaTextures = "none" | "alpha";
+enum Materials {
+  Lambert = "lambert",
+  Basic = "basic",
+  Depth = "depth",
+}
 
 class Canvas {
   private sizes: {
@@ -39,36 +25,28 @@ class Canvas {
   private controls: OrbitControls;
   private gui: dat.GUI;
   private opts: {
-    alphaTexture: Textures;
-    texture: Textures;
     color: string;
     wireframe: boolean;
     transparent: boolean;
     opacity: number;
+    material: Materials;
   };
-  private objects: My3DObject[];
-  private static textures: { [key in Textures]: string | null } = {
-    none: null,
-    door: DoorColorImagePath,
-    ambientOcclusion: AmbientOcclusionImagePath,
-    height: HeightImagePath,
-    normal: NormalImagePath,
-    metalness: MetalnessImagePath,
-    roughness: RoughnessImagePath,
-  };
-  private static alphaTextures: { [key in AlphaTextures]: string | null } = {
-    none: null,
-    alpha: AlphaImagePath,
+  private objects: MyObject3D[];
+  private lights: Array<THREE.Light | THREE.PointLight>;
+
+  private static materials: { [key in Materials]: MyMaterials } = {
+    [Materials.Lambert]: new THREE.MeshLambertMaterial(),
+    [Materials.Basic]: new THREE.MeshBasicMaterial(),
+    [Materials.Depth]: new THREE.MeshDepthMaterial(),
   };
 
   constructor() {
     this.opts = {
-      alphaTexture: "none",
-      texture: "none",
       color: "#fff",
       wireframe: false,
       transparent: false,
       opacity: 1,
+      material: Materials.Lambert,
     };
     // Sizes
     const { innerWidth, innerHeight } = window;
@@ -85,13 +63,19 @@ class Canvas {
       0.1,
       1000
     );
-    // Object
-    const material = new THREE.MeshBasicMaterial();
+    // Objects
+    const material = new THREE.MeshLambertMaterial();
     this.objects = [
       new Torus(material),
       new Sphere(material),
       new Plane(material),
     ];
+    // Lights
+    const ambientLight = new THREE.AmbientLight("#fff", 0.5);
+    const pointLight = new THREE.PointLight("#fff", 0.5);
+    pointLight.position.x = 2;
+    pointLight.position.y = 3;
+    this.lights = [ambientLight, pointLight];
     // Renderer
     this.renderer = new THREE.WebGLRenderer();
     // Clock
@@ -189,67 +173,36 @@ class Canvas {
       const color = new THREE.Color(value);
 
       for (const object of this.objects) {
-        object.material.color = color;
+        if ("color" in object.material) {
+          object.material.color = color;
+        }
       }
     });
     objects.open();
 
-    const texture = this.gui.addFolder("Texture");
-    texture
-      .add(this.opts, "texture", Object.keys(Canvas.textures))
-      .onChange((textureName: Textures) => {
-        const textureUrl = Canvas.textures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
-
-        if (texture) {
-          texture.center.x = 0.5;
-          texture.center.y = 0.5;
-          texture.repeat.x = 1;
-          texture.repeat.y = 1;
-          texture.minFilter = THREE.NearestFilter;
-          texture.magFilter = THREE.NearestFilter;
-          texture.generateMipmaps = false;
-        }
+    const materials = this.gui.addFolder("Materials");
+    materials
+      .add(this.opts, "material", Object.keys(Canvas.materials))
+      .onChange((materialName: Materials) => {
+        const material = Canvas.materials[materialName];
 
         for (const object of this.objects) {
-          object.material.map = texture;
-          object.material.needsUpdate = true;
+          object.material = material;
         }
       })
-      .setValue("none");
-    texture
-      .add(this.opts, "alphaTexture", Object.keys(Canvas.alphaTextures))
-      .onChange((textureName: AlphaTextures) => {
-        const textureUrl = Canvas.alphaTextures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+      .setValue(Materials.Basic);
 
-        if (texture) {
-          texture.center.x = 0.5;
-          texture.center.y = 0.5;
-          texture.repeat.x = 1;
-          texture.repeat.y = 1;
-          texture.minFilter = THREE.NearestFilter;
-          texture.magFilter = THREE.NearestFilter;
-          texture.generateMipmaps = false;
-        }
-
-        for (const object of this.objects) {
-          object.material.alphaMap = texture;
-          object.material.needsUpdate = true;
-        }
-      })
-      .setValue("none");
-
-    texture.open();
+    materials.open();
   }
 
   init() {
     this.createDebug();
     this.controls.enableDamping = true;
     this.camera.position.z = 3;
-    this.scene.add(...this.objects.map((objectClass) => objectClass.object));
+    this.scene.add(
+      ...this.lights,
+      ...this.objects.map((objectClass) => objectClass.object)
+    );
     document.body.appendChild(this.renderer.domElement);
     this.setSize();
     window.addEventListener("resize", this.onResize);
