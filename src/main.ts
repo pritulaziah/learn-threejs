@@ -56,6 +56,9 @@ class Canvas {
     matcap: MatcapTextures;
     flatShading: boolean;
     gradientMap: GradientMapTextures;
+    generateMipmaps: boolean;
+    minFilter: THREE.TextureFilter;
+    magFilter: THREE.TextureFilter;
   };
   private objects: MyObject3D[];
   private lights: Array<THREE.Light | THREE.PointLight>;
@@ -99,6 +102,12 @@ class Canvas {
     matcap8: Matcap8ImagePath,
   };
 
+  private static textureFilters: { [key: string]: THREE.TextureFilter } = {
+    nearest: THREE.NearestFilter,
+    linear: THREE.LinearFilter,
+    linearMipmapLinear: THREE.LinearMipMapLinearFilter,
+  };
+
   private static gradientMapTextures: {
     [key in GradientMapTextures]: TextureValue;
   } = {
@@ -121,6 +130,9 @@ class Canvas {
       matcap: "none",
       flatShading: false,
       gradientMap: "none",
+      generateMipmaps: true,
+      minFilter: Canvas.textureFilters.linearMipmapLinear,
+      magFilter: Canvas.textureFilters.linear,
     };
     // Sizes
     const { innerWidth, innerHeight } = window;
@@ -224,28 +236,41 @@ class Canvas {
     this.render();
   };
 
+  private loadTexture(textureUrl: TextureValue) {
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+
+    if (texture) {
+      texture.minFilter = this.opts.minFilter;
+      texture.magFilter = this.opts.magFilter;
+      texture.generateMipmaps = this.opts.generateMipmaps;
+    }
+
+    return texture;
+  }
+
   private createDebug() {
-    const objects = this.gui.addFolder("Objects");
-    objects.add(this.opts, "wireframe").onChange((value: boolean) => {
+    const materials = this.gui.addFolder("Materials");
+    materials.add(this.opts, "wireframe").onChange((value: boolean) => {
       for (const object of this.objects) {
         if ("wireframe" in object.material) {
           object.material.wireframe = value;
         }
       }
     });
-    objects.add(this.opts, "transparent").onChange((value: boolean) => {
+    materials.add(this.opts, "transparent").onChange((value: boolean) => {
       for (const object of this.objects) {
         object.material.transparent = value;
         object.material.needsUpdate = true;
       }
     });
-    objects.add(this.opts, "opacity", 0, 1, 0.1).onChange((value: number) => {
+    materials.add(this.opts, "opacity", 0, 1, 0.1).onChange((value: number) => {
       for (const object of this.objects) {
         object.material.opacity = value;
         object.material.needsUpdate = true;
       }
     });
-    objects.addColor(this.opts, "color").onChange((value: string) => {
+    materials.addColor(this.opts, "color").onChange((value: string) => {
       const color = new THREE.Color(value);
 
       for (const object of this.objects) {
@@ -254,9 +279,6 @@ class Canvas {
         }
       }
     });
-    objects.open();
-
-    const materials = this.gui.addFolder("Materials");
     materials
       .add(this.opts, "material", Object.keys(Canvas.materials))
       .onChange((materialName: Materials) => {
@@ -295,12 +317,14 @@ class Canvas {
     materials.open();
 
     const texture = this.gui.addFolder("Textures");
+    texture.add(this.opts, "generateMipmaps");
+    texture.add(this.opts, "minFilter", Canvas.textureFilters);
+    texture.add(this.opts, "magFilter", Canvas.textureFilters);
     texture
       .add(this.opts, "texture", Object.keys(Canvas.textures))
       .onChange((textureName: Textures) => {
         const textureUrl = Canvas.textures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+        const texture = this.loadTexture(textureUrl);
 
         for (const object of this.objects) {
           if ("map" in object.material) {
@@ -313,8 +337,7 @@ class Canvas {
       .add(this.opts, "alphaTexture", Object.keys(Canvas.alphaTextures))
       .onChange((textureName: AlphaTextures) => {
         const textureUrl = Canvas.alphaTextures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+        const texture = this.loadTexture(textureUrl);
 
         for (const object of this.objects) {
           if ("alphaMap" in object.material) {
@@ -327,8 +350,7 @@ class Canvas {
       .add(this.opts, "matcap", Object.keys(Canvas.matcapTextures))
       .onChange((textureName: MatcapTextures) => {
         const textureUrl = Canvas.matcapTextures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+        const texture = this.loadTexture(textureUrl);
 
         for (const object of this.objects) {
           if ("matcap" in object.material) {
@@ -341,8 +363,7 @@ class Canvas {
       .add(this.opts, "gradientMap", Object.keys(Canvas.gradientMapTextures))
       .onChange((textureName: GradientMapTextures) => {
         const textureUrl = Canvas.gradientMapTextures[textureName];
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureUrl ? textureLoader.load(textureUrl) : null;
+        const texture = this.loadTexture(textureUrl);
 
         for (const object of this.objects) {
           if ("gradientMap" in object.material) {
