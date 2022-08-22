@@ -6,7 +6,7 @@ class Plane extends MyObject3D {
     const geometry = new THREE.PlaneBufferGeometry(1, 1);
     super(geometry, material);
     this.object.position.x = 0;
-    this.object.material.side = THREE.DoubleSide;
+    this.applyMaterialOptions();
   }
 
   applyMaterialOptions() {

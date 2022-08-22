@@ -3,7 +3,11 @@ import * as THREE from "three";
 export type MyMaterials =
   | THREE.MeshLambertMaterial
   | THREE.MeshBasicMaterial
-  | THREE.MeshDepthMaterial;
+  | THREE.MeshDepthMaterial
+  | THREE.MeshPhongMaterial
+  | THREE.MeshToonMaterial
+  | THREE.MeshNormalMaterial
+  | THREE.MeshMatcapMaterial;
 
 class MyObject3D {
   object: THREE.Mesh<THREE.BufferGeometry, MyMaterials>;
