@@ -28,7 +28,9 @@ class MyObject3D {
     this.applyMaterialOptions();
   }
 
-  draw(_delta: number) {}
+  update(_delta: number) {}
+
+  draw() {}
 }
 
 export default MyObject3D;

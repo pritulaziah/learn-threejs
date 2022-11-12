@@ -5,10 +5,13 @@ class Sphere extends MyObject3D {
   constructor(material: MyMaterials) {
     const geometry = new THREE.SphereBufferGeometry(0.5, 16, 16);
     super(geometry, material);
+  }
+
+  draw() {
     this.object.position.x = -1.5;
   }
 
-  draw(delta: number) {
+  update(delta: number) {
     this.object.rotation.x = delta * 0.3;
     this.object.rotation.y = delta * 0.3;
   }

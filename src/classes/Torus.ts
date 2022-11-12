@@ -5,10 +5,13 @@ class Torus extends MyObject3D {
   constructor(material: MyMaterials) {
     const geometry = new THREE.TorusBufferGeometry(0.3, 0.2, 16, 32);
     super(geometry, material);
+  }
+
+  draw() {
     this.object.position.x = 1.5;
   }
 
-  draw(delta: number) {
+  update(delta: number) {
     this.object.rotation.x = delta * 0.3;
     this.object.rotation.y = delta * 0.3;
   }

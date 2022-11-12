@@ -229,7 +229,7 @@ class Canvas {
     const elapsedTime = this.clock.getElapsedTime();
 
     for (const element of this.objects) {
-      element.draw(elapsedTime);
+      element.update(elapsedTime);
     }
 
     this.controls.update();
@@ -383,6 +383,11 @@ class Canvas {
       ...this.lights,
       ...this.objects.map((objectClass) => objectClass.object)
     );
+
+    for (const element of this.objects) {
+      element.draw();
+    }
+
     document.body.appendChild(this.renderer.domElement);
     this.setSize();
     window.addEventListener("resize", this.onResize);
