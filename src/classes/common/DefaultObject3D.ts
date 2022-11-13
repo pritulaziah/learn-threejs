@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type MyMaterials =
+export type DefaultMaterials =
   | THREE.MeshLambertMaterial
   | THREE.MeshBasicMaterial
   | THREE.MeshDepthMaterial
@@ -9,10 +9,10 @@ export type MyMaterials =
   | THREE.MeshNormalMaterial
   | THREE.MeshMatcapMaterial;
 
-class MyObject3D {
-  object: THREE.Mesh<THREE.BufferGeometry, MyMaterials>;
+class DefaultObject3D {
+  object: THREE.Mesh<THREE.BufferGeometry, DefaultMaterials>;
 
-  constructor(geometry: THREE.BufferGeometry, material: MyMaterials) {
+  constructor(geometry: THREE.BufferGeometry, material: DefaultMaterials) {
     const object = new THREE.Mesh(geometry, material);
     this.object = object;
   }
@@ -33,4 +33,4 @@ class MyObject3D {
   draw() {}
 }
 
-export default MyObject3D;
+export default DefaultObject3D;
