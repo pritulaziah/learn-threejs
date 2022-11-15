@@ -1,31 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Canvas from "../components/Canvas";
 import Text3DCanvas from "../classes/Text3DCanvas";
-import * as THREE from "three";
-import DefaultObject3D from "../classes/common/DefaultObject3D";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import Text3D from "../classes/Text3D";
 
-class Cube extends DefaultObject3D {
-  constructor() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial();
-    super(geometry, material);
-  }
-
-  draw() {}
-
-  update(delta: number) {}
-}
-
-const Text3D = () => {
+const PageText3D = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (canvasRef.current == null) return;
-    const canvas = new Text3DCanvas(canvasRef.current, [new Cube()]);
-    canvas.init();
+    let canvas: Text3DCanvas | null;
+
+    const loader = new FontLoader();
+
+    loader.load("fonts/helvetiker_bold.typeface.json", (font) => {
+      const text3D = new Text3D(font);
+      canvas = new Text3DCanvas(canvasRef.current!, [text3D]);
+      canvas.init();
+    });
   }, []);
 
   return <Canvas ref={canvasRef} />;
 };
 
-export default Text3D;
+export default PageText3D;

@@ -3,10 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import DefaultObject3D from "./DefaultObject3D";
 
 class DefaultCanvas {
-  private sizes: {
-    width: number;
-    height: number;
-  };
+  private sizes: { width: number; height: number };
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
@@ -34,11 +31,7 @@ class DefaultCanvas {
     // Objects
     this.objects = [...objects];
     // Lights
-    const ambientLight = new THREE.AmbientLight("#fff", 0.5);
-    const pointLight = new THREE.PointLight("#fff", 0.5);
-    pointLight.position.x = 2;
-    pointLight.position.y = 3;
-    this.lights = [ambientLight, pointLight];
+    this.lights = [];
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas });
     // Clock
