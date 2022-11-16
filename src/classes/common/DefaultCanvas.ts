@@ -14,10 +14,7 @@ class DefaultCanvas {
   constructor(canvas: HTMLCanvasElement, objects: DefaultObject[] = []) {
     // Sizes
     const { innerWidth, innerHeight } = window;
-    this.sizes = {
-      width: innerWidth,
-      height: innerHeight,
-    };
+    this.sizes = { width: innerWidth, height: innerHeight };
     // Scene
     this.scene = new THREE.Scene();
     // Camera
@@ -100,6 +97,10 @@ class DefaultCanvas {
     this.controls.update();
     this.render();
   };
+
+  addLights(lights: THREE.Light[] | THREE.Light) {
+    this.scene.add(...(Array.isArray(lights) ? lights : [lights]));
+  }
 
   init() {
     this.camera.position.z = 3;

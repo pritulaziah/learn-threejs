@@ -4,9 +4,9 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { Font } from "three/examples/jsm/loaders/FontLoader";
 
 class Text3D implements DefaultObject {
-  object: THREE.Mesh<THREE.BufferGeometry, THREE.MeshMatcapMaterial>;
+  object: THREE.Mesh<THREE.ExtrudeGeometry, THREE.Material>;
 
-  constructor(font: Font) {
+  constructor(font: Font, material: THREE.Material) {
     const geometry = new TextGeometry("Hello Three.js", {
       font,
       size: 0.5,
@@ -19,8 +19,6 @@ class Text3D implements DefaultObject {
       bevelSegments: 5,
     });
     geometry.center();
-    const texture = new THREE.TextureLoader().load("assets/1.png");
-    const material = new THREE.MeshMatcapMaterial({ map: texture });
     this.object = new THREE.Mesh(geometry, material);
   }
 

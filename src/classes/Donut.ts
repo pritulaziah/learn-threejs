@@ -3,12 +3,9 @@ import DefaultObject from "../types/DefaultObject";
 import getRandomArbitrary from "../utils/getRandomArbitrary";
 
 class Donut implements DefaultObject {
-  object: THREE.Mesh<THREE.BufferGeometry, THREE.MeshMatcapMaterial>;
+  object: THREE.Mesh<THREE.BufferGeometry, THREE.Material>;
 
-  constructor() {
-    const geometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
-    const matcapTexture = new THREE.TextureLoader().load("assets/1.png");
-    const material = new THREE.MeshMatcapMaterial({ map: matcapTexture });
+  constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
     this.object = new THREE.Mesh(geometry, material);
   }
 
