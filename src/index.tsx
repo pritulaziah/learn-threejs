@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import Root from "./routes/Root";
 import Text3D from "./routes/Text3D";
+import Lights from "./routes/Lights";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "text3D",
     element: <Text3D />,
+  },
+  {
+    path: "lights",
+    element: <Lights />,
   },
 ]);
 

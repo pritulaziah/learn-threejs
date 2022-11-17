@@ -7,7 +7,10 @@ const Root = () => {
         <nav>
           <ul>
             <li>
-              <Link to={`text3D`}>Project Text3D</Link>
+              <Link to={`text3D`}>Text3D</Link>
+            </li>
+            <li>
+              <Link to={`lights`}>Lights</Link>
             </li>
           </ul>
         </nav>
