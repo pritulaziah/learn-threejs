@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import DefaultObject from "../../types/DefaultObject";
+import { IDefaultObject } from "../../types/DefaultObject";
 
 class DefaultCanvas {
   private sizes: { width: number; height: number };
@@ -9,9 +9,9 @@ class DefaultCanvas {
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
-  private objects: DefaultObject[];
+  private objects: IDefaultObject[];
 
-  constructor(canvas: HTMLCanvasElement, objects: DefaultObject[] = []) {
+  constructor(canvas: HTMLCanvasElement) {
     // Sizes
     const { innerWidth, innerHeight } = window;
     this.sizes = { width: innerWidth, height: innerHeight };
@@ -25,7 +25,7 @@ class DefaultCanvas {
       1000
     );
     // Objects
-    this.objects = [...objects];
+    this.objects = [];
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas });
     // Clock
@@ -102,9 +102,14 @@ class DefaultCanvas {
     this.scene.add(...(Array.isArray(lights) ? lights : [lights]));
   }
 
+  addObjects(objects: IDefaultObject[] | IDefaultObject) {
+    const objects3D = Array.isArray(objects) ? objects : [objects];
+    this.objects.push(...objects3D);
+    this.scene.add(...objects3D.map((obj) => obj.object));
+  }
+
   init() {
     this.camera.position.z = 3;
-    this.scene.add(...this.objects.map((objectClass) => objectClass.object));
 
     for (const element of this.objects) {
       element.draw();
