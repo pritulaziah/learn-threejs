@@ -7,6 +7,8 @@ import { IDefault3DObject } from "../types/DefaultObject";
 import * as THREE from "three";
 import useCanvas from "../hooks/useCanvas";
 import Default3DObject from "../classes/common/DefaultObject";
+import { createObjectFunc } from "utils/createBasicObjects";
+import { useEffect } from "react";
 
 const drawDonut = (object: IDefault3DObject) => {
   object.position.x = getRandomArbitrary(-5, 5);
@@ -19,27 +21,31 @@ const drawDonut = (object: IDefault3DObject) => {
   object.scale.set(scale, scale, scale);
 };
 
-const initCanvas = async (canvasElement: HTMLCanvasElement) => {
-  const fontLoader = new FontLoader();
-  const fontTexture = new THREE.TextureLoader();
-  const [font, matcapTexture] = await Promise.all([
-    fontLoader.loadAsync("fonts/helvetiker_bold.typeface.json"),
-    fontTexture.loadAsync("assets/1.png"),
-  ]);
-  const material = new THREE.MeshStandardMaterial({ map: matcapTexture });
-  const objects: Default3DObject[] = [new Text3D(font, material)];
-  const geometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
-
-  for (let i = 0; i < 100; i++) {
-    const donut = new Default3DObject(geometry, material, { draw: drawDonut });
-    objects.push(donut);
-  }
-
+const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
-  canvas.addObjects(objects);
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   canvas.addLights(ambientLight);
-  canvas.init();
+
+  Promise.all([
+    new FontLoader().loadAsync("fonts/helvetiker_bold.typeface.json"),
+    new THREE.TextureLoader().loadAsync("assets/1.png"),
+  ]).then(([font, matcapTexture]) => {
+    const material = new THREE.MeshStandardMaterial({ map: matcapTexture });
+    const objects: Default3DObject[] = [new Text3D(font, material)];
+    const createObject = createObjectFunc(
+      material,
+      new THREE.TorusGeometry(0.3, 0.2, 20, 45),
+      { draw: drawDonut }
+    );
+    for (let i = 0; i < 100; i++) {
+      const donut = createObject();
+      objects.push(donut);
+    }
+
+    canvas.addObjects(objects);
+  });
+
+  return canvas;
 };
 
 const PageText3D = () => {

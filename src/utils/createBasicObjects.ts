@@ -8,6 +8,10 @@ export const createObject = (
 ) => new DefaultObject(geometry, material, options);
 
 export const createObjectFunc =
-  (material: IDefaultMaterial, geometry: IDefaultGeometry) =>
+  (
+    material: IDefaultMaterial,
+    geometry: IDefaultGeometry,
+    initOptions?: Options
+  ) =>
   (options?: Options) =>
-    createObject(material, geometry, options);
+    createObject(material, geometry, options || initOptions);

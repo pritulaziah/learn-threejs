@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { IDefaultObject } from "../../types/DefaultObject";
+import { IDefaultObject } from "types/DefaultObject";
+import * as dat from "dat.gui";
 
 class DefaultCanvas {
   private sizes: { width: number; height: number };
@@ -9,7 +10,9 @@ class DefaultCanvas {
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
-  private objects: IDefaultObject[];
+  objects: IDefaultObject[];
+  lights: THREE.Light[];
+  gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
     // Sizes
@@ -26,12 +29,16 @@ class DefaultCanvas {
     );
     // Objects
     this.objects = [];
+    // Lights
+    this.lights = [];
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas });
     // Clock
     this.clock = new THREE.Clock();
     // Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // Gui
+    this.gui = new dat.GUI();
   }
 
   get width() {
@@ -98,23 +105,37 @@ class DefaultCanvas {
     this.render();
   };
 
-  addLights(lights: THREE.Light[] | THREE.Light) {
-    this.scene.add(...(Array.isArray(lights) ? lights : [lights]));
+  addLights(light: THREE.Light[] | THREE.Light) {
+    const lightArray = Array.isArray(light) ? light : [light];
+    this.scene.add(...lightArray);
+    this.lights.push(...lightArray);
   }
 
-  addObjects(objects: IDefaultObject[] | IDefaultObject) {
-    const objects3D = Array.isArray(objects) ? objects : [objects];
-    this.objects.push(...objects3D);
-    this.scene.add(...objects3D.map((obj) => obj.object));
+  addObjects(object: IDefaultObject[] | IDefaultObject) {
+    const objectArray = Array.isArray(object) ? object : [object];
+    this.objects.push(...objectArray);
+    this.scene.add(...objectArray.map((obj) => obj.object));
+    this.draw();
   }
 
-  init() {
-    this.camera.position.z = 3;
-
+  private draw() {
     for (const element of this.objects) {
       element.draw();
     }
+  }
 
+  destroy() {
+    this.gui.destroy();
+    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("dblclick", this.onOpenFullscreen);
+  }
+
+  createDebug() {}
+
+  run() {
+    this.camera.position.z = 3;
+    this.draw();
+    this.createDebug();
     this.setSize();
     window.addEventListener("resize", this.onResize);
     window.addEventListener("dblclick", this.onOpenFullscreen);

@@ -1,4 +1,4 @@
-import DefaultCanvas from "./common/DefaultCanvas";
+import DefaultCanvas from "classes/common/DefaultCanvas";
 
 class Text3DCanvas extends DefaultCanvas {}
 

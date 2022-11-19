@@ -1,12 +1,20 @@
+import DefaultCanvas from "classes/common/DefaultCanvas";
 import { useEffect, useRef } from "react";
 
-const useCanvas = (initCanvas: (canvasElement: HTMLCanvasElement) => void) => {
+const useCanvas = (
+  initCanvas: (canvasElement: HTMLCanvasElement) => DefaultCanvas
+) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (canvasRef.current == null) return;
 
-    initCanvas(canvasRef.current);
+    const canvas = initCanvas(canvasRef.current);
+    canvas.run();
+
+    return () => {
+      canvas.destroy();
+    };
   }, []);
 
   return canvasRef;

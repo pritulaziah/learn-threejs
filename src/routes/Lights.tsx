@@ -1,11 +1,11 @@
 import Canvas from "components/Canvas";
-import DefaultCanvas from "classes/common/DefaultCanvas";
+import LightsCanvas from "classes/LightsCanvas";
 import useCanvas from "hooks/useCanvas";
 import { createObjectFunc } from "utils/createBasicObjects";
 import * as THREE from "three";
 
-const initCanvas = async (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
+const initCanvas = (canvasElement: HTMLCanvasElement) => {
+  const canvas = new LightsCanvas(canvasElement);
   const material = new THREE.MeshStandardMaterial({ roughness: 0.4 });
 
   const sphere = createObjectFunc(
@@ -40,7 +40,7 @@ const initCanvas = async (canvasElement: HTMLCanvasElement) => {
   const light = new THREE.AmbientLight(0xffffff, 0.5);
   canvas.addObjects([sphere, cube, torus, plane]);
   canvas.addLights(light);
-  canvas.init();
+  return canvas;
 };
 
 const PageText3D = () => {
