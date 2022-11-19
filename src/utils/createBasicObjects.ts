@@ -1,11 +1,11 @@
-import { IDefaultGeometry, IDefaultMaterial } from "../types/DefaultObject";
-import DefaultObject, { Options } from "../classes/common/DefaultObject";
+import { IDefaultGeometry, IDefaultMaterial } from "types/DefaultObject";
+import DefaultObject, { Options } from "classes/common/DefaultObject";
 import {
   createBoxGeometry,
   createPlaneGeometry,
   createSphereGeometry,
   createTorusGeometry,
-} from "./createGeometry";
+} from "utils/createGeometry";
 
 type CreateObjectFromMaterial = (
   material: IDefaultMaterial

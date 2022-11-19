@@ -1,13 +1,14 @@
-import Canvas from "../components/Canvas";
-import DefaultCanvas from "../classes/common/DefaultCanvas";
-import useCanvas from "../hooks/useCanvas";
+import Canvas from "components/Canvas";
+import DefaultCanvas from "classes/common/DefaultCanvas";
+import useCanvas from "hooks/useCanvas";
 import {
   createCube,
   createSphere,
   createTorus,
   createPlane,
-} from "../utils/createBasicObjects";
-import { createMeshStandardMaterial } from "../utils/createMaterials";
+} from "utils/createBasicObjects";
+import { createAmbientLight } from "utils/createLights";
+import { createMeshStandardMaterial } from "utils/createMaterials";
 
 const initCanvas = async (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
@@ -30,8 +31,9 @@ const initCanvas = async (canvasElement: HTMLCanvasElement) => {
       object.position.y = -0.65;
     },
   });
-
+  const light = createAmbientLight(0xffffff, 0.5);
   canvas.addObjects([sphere, cube, torus, plane]);
+  canvas.addLights(light);
   canvas.init();
 };
 
