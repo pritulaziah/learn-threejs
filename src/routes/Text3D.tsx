@@ -1,14 +1,13 @@
-import Canvas from "../components/Canvas";
-import DefaultCanvas from "../classes/common/DefaultCanvas";
+import Canvas from "components/Canvas";
+import DefaultCanvas from "classes/common/DefaultCanvas";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import Text3D from "../classes/Text3D";
-import getRandomArbitrary from "../utils/getRandomArbitrary";
-import { IDefault3DObject } from "../types/DefaultObject";
+import getRandomArbitrary from "utils/getRandomArbitrary";
+import { IDefault3DObject } from "types/DefaultObject";
 import * as THREE from "three";
-import useCanvas from "../hooks/useCanvas";
-import Default3DObject from "../classes/common/DefaultObject";
+import useCanvas from "hooks/useCanvas";
+import Default3DObject from "classes/common/DefaultObject";
 import { createObjectFunc } from "utils/createBasicObjects";
-import { useEffect } from "react";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 const drawDonut = (object: IDefault3DObject) => {
   object.position.x = getRandomArbitrary(-5, 5);
@@ -24,14 +23,29 @@ const drawDonut = (object: IDefault3DObject) => {
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  canvas.addLights(ambientLight);
+  const pointLight = new THREE.PointLight(0xffffff, 0.5);
+  pointLight.position.set(2, 3, 4);
+  canvas.addLights([ambientLight, pointLight]);
 
   Promise.all([
     new FontLoader().loadAsync("fonts/helvetiker_bold.typeface.json"),
     new THREE.TextureLoader().loadAsync("assets/1.png"),
   ]).then(([font, matcapTexture]) => {
     const material = new THREE.MeshStandardMaterial({ map: matcapTexture });
-    const objects: Default3DObject[] = [new Text3D(font, material)];
+    const textGeometry = new TextGeometry("Hello Three.js", {
+      font,
+      size: 0.5,
+      height: 0.2,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.02,
+      bevelOffset: 0,
+      bevelSegments: 5,
+    });
+    textGeometry.center();
+    const text3D = createObjectFunc(material, textGeometry)();
+    const objects: Default3DObject[] = [text3D];
     const createObject = createObjectFunc(
       material,
       new THREE.TorusGeometry(0.3, 0.2, 20, 45),
