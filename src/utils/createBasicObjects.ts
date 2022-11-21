@@ -1,4 +1,4 @@
-import { IDefaultGeometry, IDefaultMaterial } from "types/DefaultObject";
+import { IDefaultGeometry, IDefaultMaterial } from "types/objects";
 import DefaultObject, { Options } from "classes/common/DefaultObject";
 
 export const createObject = (

@@ -4,7 +4,7 @@ import {
   IDefaultMaterial,
   IDefault3DObject,
   IDefaultObject,
-} from "../../types/DefaultObject";
+} from "types/objects";
 
 export interface Options {
   draw?: (object: IDefault3DObject) => void;

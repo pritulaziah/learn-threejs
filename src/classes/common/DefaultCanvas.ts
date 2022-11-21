@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { IDefaultObject } from "types/DefaultObject";
+import { IDefaultObject } from "types/objects";
+import { IDefaultLights } from "types/lights";
 import * as dat from "dat.gui";
 
 class DefaultCanvas {
@@ -11,7 +12,7 @@ class DefaultCanvas {
   private controls: OrbitControls;
   private clock: THREE.Clock;
   objects: IDefaultObject[];
-  lights: THREE.Light[];
+  lights: IDefaultLights[];
   gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -105,7 +106,7 @@ class DefaultCanvas {
     this.render();
   };
 
-  addLights(light: THREE.Light[] | THREE.Light) {
+  addLights(light: IDefaultLights[] | IDefaultLights) {
     const lightArray = Array.isArray(light) ? light : [light];
     this.scene.add(...lightArray);
     this.lights.push(...lightArray);

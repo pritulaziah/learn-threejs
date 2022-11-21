@@ -2,7 +2,7 @@ import Canvas from "components/Canvas";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
-import { IDefault3DObject } from "types/DefaultObject";
+import { IDefault3DObject } from "types/objects";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import Default3DObject from "classes/common/DefaultObject";
