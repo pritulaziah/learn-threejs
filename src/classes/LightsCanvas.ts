@@ -1,10 +1,11 @@
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import * as THREE from "three";
-import { IDefaultLights } from "types/lights";
+import { ILights } from "types/lights";
+import * as dat from "dat.gui";
 
 type OptionLight = {
   instance: typeof THREE.Light;
-  gui: (light: IDefaultLights) => void;
+  gui: (light: ILights) => void;
 };
 
 class LightsCanvas extends DefaultCanvas {
@@ -13,6 +14,12 @@ class LightsCanvas extends DefaultCanvas {
   }
 
   createDebugLights() {
+    const addPosition = (folder: dat.GUI, light: ILights) => {
+      folder.add(light.position, "x", 0, 5, 0.25);
+      folder.add(light.position, "y", 0, 5, 0.25);
+      folder.add(light.position, "z", 0, 5, 0.25);
+    };
+
     const optionLights = <OptionLight[]>[
       {
         instance: THREE.AmbientLight,
@@ -51,6 +58,16 @@ class LightsCanvas extends DefaultCanvas {
           folder.add(light, "intensity", 0, 5, 0.25);
           folder.add(light, "width", 0, 4, 0.5);
           folder.add(light, "height", 0, 4, 0.5);
+        },
+      },
+      {
+        instance: THREE.SpotLight,
+        gui: (light) => {
+          const folder = this.gui.addFolder("SpotLight");
+          folder.add(light, "intensity", 0, 1, 0.15);
+          folder.add(light, "angle", 0, Math.PI, 0.025);
+          folder.add(light, "penumbra", 0, 1, 0.1);
+          addPosition(folder, light);
         },
       },
     ];

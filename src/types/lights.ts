@@ -1,8 +1,9 @@
 import * as THREE from "three";
 
-export type IDefaultLights =
+export type ILights =
   | THREE.AmbientLight
   | THREE.PointLight
   | THREE.DirectionalLight
   | THREE.HemisphereLight
-  | THREE.RectAreaLight;
+  | THREE.RectAreaLight
+  | THREE.SpotLight;
