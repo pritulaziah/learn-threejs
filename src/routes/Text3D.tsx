@@ -25,7 +25,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   const pointLight = new THREE.PointLight(0xffffff, 0.5);
   pointLight.position.set(2, 3, 4);
-  canvas.addLights([ambientLight, pointLight]);
+  canvas.addLight([ambientLight, pointLight]);
 
   Promise.all([
     new FontLoader().loadAsync("fonts/helvetiker_bold.typeface.json"),
@@ -56,7 +56,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       objects.push(donut);
     }
 
-    canvas.addObjects(objects);
+    canvas.addObject(objects);
   });
 
   return canvas;

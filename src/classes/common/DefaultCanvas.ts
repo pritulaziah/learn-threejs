@@ -4,6 +4,9 @@ import { IDefaultObject } from "types/objects";
 import { ILights } from "types/lights";
 import * as dat from "dat.gui";
 
+const toArray = <T>(entity: T | T[]): T[] =>
+  Array.isArray(entity) ? entity : [entity];
+
 class DefaultCanvas {
   private sizes: { width: number; height: number };
   private scene: THREE.Scene;
@@ -106,16 +109,25 @@ class DefaultCanvas {
     this.render();
   };
 
-  addLights(light: ILights[] | ILights) {
-    const lightArray = Array.isArray(light) ? light : [light];
-    this.scene.add(...lightArray);
+  addToScene(objects: THREE.Object3D<THREE.Event>[]) {
+    this.scene.add(...objects);
+  }
+
+  addDefaultObject3D(defaultObject3D: THREE.Object3D[] | THREE.Object3D) {
+    const defaultObject3DArray = toArray(defaultObject3D);
+    this.addToScene(defaultObject3DArray);
+  }
+
+  addLight(light: ILights[] | ILights) {
+    const lightArray = toArray(light);
+    this.addToScene(lightArray);
     this.lights.push(...lightArray);
   }
 
-  addObjects(object: IDefaultObject[] | IDefaultObject) {
-    const objectArray = Array.isArray(object) ? object : [object];
+  addObject(object: IDefaultObject[] | IDefaultObject) {
+    const objectArray = toArray(object);
     this.objects.push(...objectArray);
-    this.scene.add(...objectArray.map((obj) => obj.object));
+    this.addToScene(objectArray.map((obj) => obj.object));
     this.draw();
   }
 

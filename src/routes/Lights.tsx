@@ -47,12 +47,16 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       object.position.y = -0.65;
     },
   });
-  canvas.addObjects([sphere, cube, torus, plane]);
+  canvas.addObject([sphere, cube, torus, plane]);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 0);
   const directionalLight = new THREE.DirectionalLight(0xffff2e, 0);
   directionalLight.position.set(1, 0.25, 0);
-  const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0);
+  const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.1);
+  const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+    hemisphereLight,
+    0.2
+  );
   const pointLight = new THREE.PointLight(0xff9000, 0, 0, 0.5);
   pointLight.position.set(1, -0.5, 1);
   const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 0, 2, 2);
@@ -60,14 +64,15 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   rectAreaLight.lookAt(new THREE.Vector3());
   const spotLight = new THREE.SpotLight(
     0x78ff00,
-    0.5,
+    0,
     10,
     Math.PI * 0.1,
     0.25,
     1
   );
   spotLight.position.set(0, 0, 3);
-  canvas.addLights([
+  canvas.addDefaultObject3D([hemisphereLightHelper]);
+  canvas.addLight([
     ambientLight,
     directionalLight,
     hemisphereLight,
