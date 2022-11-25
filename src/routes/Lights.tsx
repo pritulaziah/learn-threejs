@@ -97,10 +97,10 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   return canvas;
 };
 
-const PageText3D = () => {
+const LightsPage = () => {
   const canvasRef = useCanvas(initCanvas);
 
   return <Canvas ref={canvasRef} />;
 };
 
-export default PageText3D;
+export default LightsPage;
