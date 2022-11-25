@@ -15,7 +15,7 @@ const useCanvas = (
     return () => {
       canvas.destroy();
     };
-  }, []);
+  }, [initCanvas]);
 
   return canvasRef;
 };

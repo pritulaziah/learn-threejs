@@ -14,11 +14,14 @@ class DefaultCanvas {
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
+  private requestId?: number;
   objects: IDefaultObject[];
   lights: ILights[];
   gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
+    // Request animation frame id
+    this.requestId = undefined;
     // Sizes
     const { innerWidth, innerHeight } = window;
     this.sizes = { width: innerWidth, height: innerHeight };
@@ -98,7 +101,7 @@ class DefaultCanvas {
   };
 
   private animate = () => {
-    requestAnimationFrame(this.animate);
+    this.requestId = requestAnimationFrame(this.animate);
     const elapsedTime = this.clock.getElapsedTime();
 
     for (const element of this.objects) {
@@ -141,6 +144,7 @@ class DefaultCanvas {
     this.gui.destroy();
     window.removeEventListener("resize", this.onResize);
     window.removeEventListener("dblclick", this.onOpenFullscreen);
+    this.requestId != null && cancelAnimationFrame(this.requestId);
   }
 
   createDebug() {}

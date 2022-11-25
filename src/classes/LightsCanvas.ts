@@ -9,18 +9,14 @@ type OptionLight = {
 };
 
 class LightsCanvas extends DefaultCanvas {
-  constructor(canvas: HTMLCanvasElement) {
-    super(canvas);
-  }
-
-  createDebugLights() {
+  createDebug() {
     const addPosition = (folder: dat.GUI, light: ILights) => {
-      folder.add(light.position, "x", 0, 5, 0.25);
-      folder.add(light.position, "y", 0, 5, 0.25);
-      folder.add(light.position, "z", 0, 5, 0.25);
+      folder.add(light.position, "x", -5, 5, 0.25);
+      folder.add(light.position, "y", -5, 5, 0.25);
+      folder.add(light.position, "z", -5, 5, 0.25);
     };
 
-    const optionLights = <OptionLight[]>[
+    const optionLights = [
       {
         instance: THREE.AmbientLight,
         gui: (light) => {
@@ -70,7 +66,7 @@ class LightsCanvas extends DefaultCanvas {
           addPosition(folder, light);
         },
       },
-    ];
+    ] as OptionLight[];
 
     for (const optionLight of optionLights) {
       const targetLight = this.lights.find(
@@ -80,12 +76,6 @@ class LightsCanvas extends DefaultCanvas {
       if (targetLight) {
         optionLight.gui(targetLight);
       }
-    }
-  }
-
-  createDebug() {
-    if (this.lights.length > 0) {
-      this.createDebugLights();
     }
   }
 }
