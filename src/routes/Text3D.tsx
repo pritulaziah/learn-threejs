@@ -2,14 +2,13 @@ import Canvas from "components/Canvas";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
-import { IDefault3DObject } from "types/objects";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import Default3DObject from "classes/common/DefaultObject";
 import { createObjectFunc, createObject } from "utils/createBasicObjects";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
-const drawDonut = (object: IDefault3DObject) => {
+const drawDonut = (object: THREE.Object3D) => {
   object.position.x = getRandomArbitrary(-5, 5);
   object.position.y = getRandomArbitrary(-5, 5);
   object.position.z = getRandomArbitrary(-5, 5);

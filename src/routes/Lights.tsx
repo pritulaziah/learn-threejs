@@ -3,7 +3,6 @@ import DefaultCanvas from "classes/common/DefaultCanvas";
 import useCanvas from "hooks/useCanvas";
 import { createObject } from "utils/createBasicObjects";
 import * as THREE from "three";
-import { IDefault3DObject } from "types/objects";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
 const addPosition = (folder: dat.GUI, light: THREE.Object3D) => {
@@ -13,7 +12,7 @@ const addPosition = (folder: dat.GUI, light: THREE.Object3D) => {
 };
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const update = (object: IDefault3DObject, delta: number) => {
+  const update = (object: THREE.Object3D, delta: number) => {
     object.rotation.x = 0.1 * delta;
     object.rotation.y = 0.15 * delta;
   };

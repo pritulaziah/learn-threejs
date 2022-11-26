@@ -1,12 +1,8 @@
-import {
-  IDefault3DObject,
-  IDefaultGeometry,
-  IDefaultMaterial,
-} from "types/objects";
+import { IDefaultGeometry, IDefaultMaterial } from "types/objects";
 import DefaultObject, { Options } from "classes/common/DefaultObject";
 import * as THREE from "three";
 
-export const createObject = (object: IDefault3DObject, options: Options = {}) =>
+export const createObject = (object: THREE.Object3D, options: Options = {}) =>
   new DefaultObject(object, options);
 
 export const createObjectFunc =

@@ -1,6 +1,6 @@
 import { GUI } from "dat.gui";
 import { Object3D } from "three";
-import { IDefault3DObject, IDefaultObject } from "types/objects";
+import { IDefaultObject } from "types/objects";
 
 export interface Options {
   draw?: (object: Object3D) => void;
@@ -9,10 +9,10 @@ export interface Options {
 }
 
 class Default3DObject implements IDefaultObject {
-  object: IDefault3DObject;
+  object: THREE.Object3D;
   options: Options;
 
-  constructor(object: IDefault3DObject, options: Options = {}) {
+  constructor(object: THREE.Object3D, options: Options = {}) {
     this.object = object;
     this.options = options;
   }
