@@ -1,18 +1,20 @@
 import { GUI } from "dat.gui";
-import { Object3D } from "three";
 import { IDefaultObject } from "types/objects";
 
-export interface Options {
-  draw?: (object: Object3D) => void;
-  update?: (object: Object3D, delta: number) => void;
-  debug?: (object: Object3D, gui: GUI) => void;
+export interface Options<T> {
+  draw?: (object: T) => void;
+  update?: (object: T, delta: number) => void;
+  debug?: (object: T, gui: GUI) => void;
+  helper?: (object: T) => THREE.Object3D;
 }
 
-class Default3DObject implements IDefaultObject {
-  object: THREE.Object3D;
-  options: Options;
+class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
+  implements IDefaultObject<T>
+{
+  object: T;
+  options: Options<T>;
 
-  constructor(object: THREE.Object3D, options: Options = {}) {
+  constructor(object: T, options: Options<T> = {}) {
     this.object = object;
     this.options = options;
   }
@@ -27,6 +29,10 @@ class Default3DObject implements IDefaultObject {
 
   debug(gui: GUI) {
     this.options?.debug?.(this.object, gui);
+  }
+
+  helper() {
+    this.options?.helper?.(this.object);
   }
 }
 

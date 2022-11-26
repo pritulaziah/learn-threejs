@@ -13,21 +13,21 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       ambientLightFolder.add(object, "intensity", 0, 1, 0.001);
     },
   });
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-  const directionalLightObject = createObject(directionalLight, {
-    draw: (object) => {
-      object.position.set(2, 2, -1);
-    },
-    debug: (object, gui) => {
-      const directionalLightFolder = gui.addFolder("DirectionalLight");
-      directionalLightFolder.add(object, "intensity", 0, 1, 0.001);
-      directionalLightFolder.add(object.position, "x", -5, 5, 0.001);
-      directionalLightFolder.add(object.position, "y", -5, 5, 0.001);
-      directionalLightFolder.add(object.position, "z", -5, 5, 0.001);
-    },
-  });
-  const directionalLightHelper = createObject(
-    new THREE.DirectionalLightHelper(directionalLight)
+  const directionalLight = createObject(
+    new THREE.DirectionalLight(0xffffff, 0.5),
+    {
+      draw: (object) => {
+        object.position.set(2, 2, -1);
+      },
+      debug: (object, gui) => {
+        const directionalLightFolder = gui.addFolder("DirectionalLight");
+        directionalLightFolder.add(object, "intensity", 0, 1, 0.001);
+        directionalLightFolder.add(object.position, "x", -5, 5, 0.001);
+        directionalLightFolder.add(object.position, "y", -5, 5, 0.001);
+        directionalLightFolder.add(object.position, "z", -5, 5, 0.001);
+      },
+      helper: (object) => new THREE.DirectionalLightHelper(object),
+    }
   );
 
   const material = new THREE.MeshStandardMaterial({ roughness: 0.7 });
@@ -44,13 +44,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     }
   );
 
-  canvas.addObject([
-    plane,
-    sphere,
-    ambientLight,
-    directionalLightObject,
-    directionalLightHelper,
-  ]);
+  canvas.addObject([plane, sphere, ambientLight, directionalLight]);
 
   return canvas;
 };

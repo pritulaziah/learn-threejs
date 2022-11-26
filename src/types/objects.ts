@@ -23,8 +23,8 @@ export type IDefaultGeometry =
   | TextGeometry
   | THREE.PlaneGeometry;
 
-export interface IDefaultObject {
-  object: THREE.Object3D;
+export interface IDefaultObject<T extends THREE.Object3D = THREE.Object3D> {
+  object: T;
 
   update(_delta: number): void;
   draw(): void;

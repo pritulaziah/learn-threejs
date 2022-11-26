@@ -4,7 +4,7 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
-import Default3DObject from "classes/common/DefaultObject";
+import { IDefaultObject } from "types/objects";
 import { createObjectFunc, createObject } from "utils/createBasicObjects";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
@@ -48,7 +48,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     });
     textGeometry.center();
     const text3D = createObject(new THREE.Mesh(textGeometry, material));
-    const objects: Default3DObject[] = [text3D];
+    const objects: IDefaultObject[] = [text3D];
     const createDonutObject = createObjectFunc(
       material,
       new THREE.TorusGeometry(0.3, 0.2, 20, 45),
