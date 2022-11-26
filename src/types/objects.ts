@@ -1,3 +1,4 @@
+import { GUI } from "dat.gui";
 import * as THREE from "three";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
@@ -22,11 +23,12 @@ export type IDefaultGeometry =
   | TextGeometry
   | THREE.PlaneGeometry;
 
-export type IDefault3DObject = THREE.Mesh<IDefaultGeometry, IDefaultMaterial>;
+export type IDefault3DObject = THREE.Object3D;
 
 export interface IDefaultObject {
-  object: THREE.Mesh<IDefaultGeometry, IDefaultMaterial>;
+  object: IDefault3DObject;
 
   update(_delta: number): void;
   draw(): void;
+  debug(gui: GUI): void;
 }

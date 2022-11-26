@@ -1,11 +1,13 @@
-import { IDefaultGeometry, IDefaultMaterial } from "types/objects";
+import {
+  IDefault3DObject,
+  IDefaultGeometry,
+  IDefaultMaterial,
+} from "types/objects";
 import DefaultObject, { Options } from "classes/common/DefaultObject";
+import * as THREE from "three";
 
-export const createObject = (
-  material: IDefaultMaterial,
-  geometry: IDefaultGeometry,
-  options: Options = {}
-) => new DefaultObject(geometry, material, options);
+export const createObject = (object: IDefault3DObject, options: Options = {}) =>
+  new DefaultObject(object, options);
 
 export const createObjectFunc =
   (
@@ -14,4 +16,4 @@ export const createObjectFunc =
     initOptions?: Options
   ) =>
   (options?: Options) =>
-    createObject(material, geometry, options || initOptions);
+    createObject(new THREE.Mesh(geometry, material), options || initOptions);

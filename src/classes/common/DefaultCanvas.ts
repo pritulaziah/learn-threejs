@@ -14,8 +14,7 @@ class DefaultCanvas {
   private controls: OrbitControls;
   private clock: THREE.Clock;
   private requestId?: number;
-  dynamicObjects: IDefaultObject[];
-  staticObjects: THREE.Object3D[];
+  objects: IDefaultObject[];
   gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -34,9 +33,7 @@ class DefaultCanvas {
       1000
     );
     // Dynamic objects
-    this.dynamicObjects = [];
-    // Static objects
-    this.staticObjects = [];
+    this.objects = [];
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas });
     // Clock
@@ -103,7 +100,7 @@ class DefaultCanvas {
     this.requestId = requestAnimationFrame(this.animate);
     const elapsedTime = this.clock.getElapsedTime();
 
-    for (const element of this.dynamicObjects) {
+    for (const element of this.objects) {
       element.update(elapsedTime);
     }
 
@@ -111,25 +108,19 @@ class DefaultCanvas {
     this.render();
   };
 
-  addToScene(objects: THREE.Object3D<THREE.Event>[]) {
+  private addToScene(objects: THREE.Object3D<THREE.Event>[]) {
     this.scene.add(...objects);
   }
 
-  addStaticObject(object: THREE.Object3D[] | THREE.Object3D) {
-    const staticObjectArray = toArray(object);
-    this.addToScene(staticObjectArray);
-    this.staticObjects.push(...staticObjectArray);
-  }
-
-  addDynamicObject(object: IDefaultObject[] | IDefaultObject) {
-    const dynamicObjectArray = toArray(object);
-    this.dynamicObjects.push(...dynamicObjectArray);
-    this.addToScene(dynamicObjectArray.map((obj) => obj.object));
+  addObject(object: IDefaultObject[] | IDefaultObject) {
+    const objectArray = toArray(object);
+    this.objects.push(...objectArray);
+    this.addToScene(objectArray.map((obj) => obj.object));
     this.draw();
   }
 
   private draw() {
-    for (const element of this.dynamicObjects) {
+    for (const element of this.objects) {
       element.draw();
     }
   }
@@ -141,7 +132,11 @@ class DefaultCanvas {
     this.requestId != null && cancelAnimationFrame(this.requestId);
   }
 
-  createDebug() {}
+  createDebug() {
+    for (let obj of this.objects) {
+      obj.debug(this.gui);
+    }
+  }
 
   setCameraPosition({ x = 0, y = 0, z = 0 }) {
     this.camera.position.set(x, y, z);

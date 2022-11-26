@@ -1,12 +1,12 @@
 import Canvas from "components/Canvas";
-import Text3DCanvas from "classes/Text3DCanvas";
+import DefaultCanvas from "classes/common/DefaultCanvas";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
 import { IDefault3DObject } from "types/objects";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import Default3DObject from "classes/common/DefaultObject";
-import { createObjectFunc } from "utils/createBasicObjects";
+import { createObjectFunc, createObject } from "utils/createBasicObjects";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 const drawDonut = (object: IDefault3DObject) => {
@@ -21,12 +21,15 @@ const drawDonut = (object: IDefault3DObject) => {
 };
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new Text3DCanvas(canvasElement);
+  const canvas = new DefaultCanvas(canvasElement);
   canvas.setCameraPosition({ z: 3 });
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  const pointLight = new THREE.PointLight(0xffffff, 0.5);
-  pointLight.position.set(2, 3, 4);
-  canvas.addStaticObject([ambientLight, pointLight]);
+  const ambientLight = createObject(new THREE.AmbientLight(0xffffff, 0.5));
+  const pointLight = createObject(new THREE.PointLight(0xffffff, 0.5), {
+    draw: (object) => {
+      object.position.set(2, 3, 4);
+    },
+  });
+  canvas.addObject([ambientLight, pointLight]);
 
   Promise.all([
     new FontLoader().loadAsync("fonts/helvetiker_bold.typeface.json"),
@@ -45,19 +48,19 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       bevelSegments: 5,
     });
     textGeometry.center();
-    const text3D = createObjectFunc(material, textGeometry)();
+    const text3D = createObject(new THREE.Mesh(textGeometry, material));
     const objects: Default3DObject[] = [text3D];
-    const createObject = createObjectFunc(
+    const createDonutObject = createObjectFunc(
       material,
       new THREE.TorusGeometry(0.3, 0.2, 20, 45),
       { draw: drawDonut }
     );
     for (let i = 0; i < 100; i++) {
-      const donut = createObject();
+      const donut = createDonutObject();
       objects.push(donut);
     }
 
-    canvas.addDynamicObject(objects);
+    canvas.addObject(objects);
   });
 
   return canvas;

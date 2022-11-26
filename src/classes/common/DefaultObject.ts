@@ -1,26 +1,19 @@
-import * as THREE from "three";
-import {
-  IDefaultGeometry,
-  IDefaultMaterial,
-  IDefault3DObject,
-  IDefaultObject,
-} from "types/objects";
+import { GUI } from "dat.gui";
+import { Object3D } from "three";
+import { IDefault3DObject, IDefaultObject } from "types/objects";
 
 export interface Options {
-  draw?: (object: IDefault3DObject) => void;
-  update?: (object: IDefault3DObject, delta: number) => void;
+  draw?: (object: Object3D) => void;
+  update?: (object: Object3D, delta: number) => void;
+  debug?: (object: Object3D, gui: GUI) => void;
 }
 
 class Default3DObject implements IDefaultObject {
   object: IDefault3DObject;
   options: Options;
 
-  constructor(
-    geometry: IDefaultGeometry,
-    material: IDefaultMaterial,
-    options: Options = {}
-  ) {
-    this.object = new THREE.Mesh(geometry, material);
+  constructor(object: IDefault3DObject, options: Options = {}) {
+    this.object = object;
     this.options = options;
   }
 
@@ -30,6 +23,10 @@ class Default3DObject implements IDefaultObject {
 
   update(delta: number) {
     this.options?.update?.(this.object, delta);
+  }
+
+  debug(gui: GUI) {
+    this.options?.debug?.(this.object, gui);
   }
 }
 
