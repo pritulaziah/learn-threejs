@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { IDefaultObject } from "types/objects";
-import { ILights } from "types/lights";
 import * as dat from "dat.gui";
 
 const toArray = <T>(entity: T | T[]): T[] =>
@@ -10,13 +9,13 @@ const toArray = <T>(entity: T | T[]): T[] =>
 class DefaultCanvas {
   private sizes: { width: number; height: number };
   private scene: THREE.Scene;
-  private camera: THREE.PerspectiveCamera;
+  camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
   private requestId?: number;
-  objects: IDefaultObject[];
-  lights: ILights[];
+  dynamicObjects: IDefaultObject[];
+  staticObjects: THREE.Object3D[];
   gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -34,10 +33,10 @@ class DefaultCanvas {
       0.1,
       1000
     );
-    // Objects
-    this.objects = [];
-    // Lights
-    this.lights = [];
+    // Dynamic objects
+    this.dynamicObjects = [];
+    // Static objects
+    this.staticObjects = [];
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas });
     // Clock
@@ -104,7 +103,7 @@ class DefaultCanvas {
     this.requestId = requestAnimationFrame(this.animate);
     const elapsedTime = this.clock.getElapsedTime();
 
-    for (const element of this.objects) {
+    for (const element of this.dynamicObjects) {
       element.update(elapsedTime);
     }
 
@@ -116,26 +115,21 @@ class DefaultCanvas {
     this.scene.add(...objects);
   }
 
-  addDefaultObject3D(defaultObject3D: THREE.Object3D[] | THREE.Object3D) {
-    const defaultObject3DArray = toArray(defaultObject3D);
-    this.addToScene(defaultObject3DArray);
+  addStaticObject(object: THREE.Object3D[] | THREE.Object3D) {
+    const staticObjectArray = toArray(object);
+    this.addToScene(staticObjectArray);
+    this.staticObjects.push(...staticObjectArray);
   }
 
-  addLight(light: ILights[] | ILights) {
-    const lightArray = toArray(light);
-    this.addToScene(lightArray);
-    this.lights.push(...lightArray);
-  }
-
-  addObject(object: IDefaultObject[] | IDefaultObject) {
-    const objectArray = toArray(object);
-    this.objects.push(...objectArray);
-    this.addToScene(objectArray.map((obj) => obj.object));
+  addDynamicObject(object: IDefaultObject[] | IDefaultObject) {
+    const dynamicObjectArray = toArray(object);
+    this.dynamicObjects.push(...dynamicObjectArray);
+    this.addToScene(dynamicObjectArray.map((obj) => obj.object));
     this.draw();
   }
 
   private draw() {
-    for (const element of this.objects) {
+    for (const element of this.dynamicObjects) {
       element.draw();
     }
   }
@@ -149,8 +143,11 @@ class DefaultCanvas {
 
   createDebug() {}
 
+  setCameraPosition({ x = 0, y = 0, z = 0 }) {
+    this.camera.position.set(x, y, z);
+  }
+
   run() {
-    this.camera.position.z = 3;
     this.draw();
     this.createDebug();
     this.setSize();

@@ -1,16 +1,15 @@
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import * as THREE from "three";
-import { ILights } from "types/lights";
 import * as dat from "dat.gui";
 
-type OptionLight = {
+type OptionLight<T extends THREE.Object3D = THREE.Object3D> = {
   instance: typeof THREE.Light;
-  gui: (light: ILights) => void;
+  gui: (object: T) => void;
 };
 
 class LightsCanvas extends DefaultCanvas {
   createDebug() {
-    const addPosition = (folder: dat.GUI, light: ILights) => {
+    const addPosition = (folder: dat.GUI, light: THREE.Object3D) => {
       folder.add(light.position, "x", -5, 5, 0.25);
       folder.add(light.position, "y", -5, 5, 0.25);
       folder.add(light.position, "z", -5, 5, 0.25);
@@ -69,7 +68,7 @@ class LightsCanvas extends DefaultCanvas {
     ] as OptionLight[];
 
     for (const optionLight of optionLights) {
-      const targetLight = this.lights.find(
+      const targetLight = this.staticObjects.find(
         (light) => light instanceof optionLight.instance
       );
 

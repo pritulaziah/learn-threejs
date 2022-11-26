@@ -1,5 +1,5 @@
 import Canvas from "components/Canvas";
-import DefaultCanvas from "classes/common/DefaultCanvas";
+import Text3DCanvas from "classes/Text3DCanvas";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
 import { IDefault3DObject } from "types/objects";
@@ -21,11 +21,12 @@ const drawDonut = (object: IDefault3DObject) => {
 };
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
+  const canvas = new Text3DCanvas(canvasElement);
+  canvas.setCameraPosition({ z: 3 });
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   const pointLight = new THREE.PointLight(0xffffff, 0.5);
   pointLight.position.set(2, 3, 4);
-  canvas.addLight([ambientLight, pointLight]);
+  canvas.addStaticObject([ambientLight, pointLight]);
 
   Promise.all([
     new FontLoader().loadAsync("fonts/helvetiker_bold.typeface.json"),
@@ -56,7 +57,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       objects.push(donut);
     }
 
-    canvas.addObject(objects);
+    canvas.addDynamicObject(objects);
   });
 
   return canvas;

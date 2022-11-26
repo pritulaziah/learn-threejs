@@ -12,6 +12,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     object.rotation.y = 0.15 * delta;
   };
   const canvas = new LightsCanvas(canvasElement);
+  canvas.setCameraPosition({ z: 3 });
   const material = new THREE.MeshStandardMaterial({ roughness: 0.4 });
 
   const sphere = createObjectFunc(
@@ -47,7 +48,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       object.position.y = -0.65;
     },
   });
-  canvas.addObject([sphere, cube, torus, plane]);
+  canvas.addDynamicObject([sphere, cube, torus, plane]);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 0);
   const directionalLight = new THREE.DirectionalLight(0xffff2e, 0);
@@ -78,14 +79,12 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
   const spotLightHelper = new THREE.SpotLightHelper(spotLight);
   spotLight.position.set(0, 0, 3);
-  canvas.addDefaultObject3D([
+  canvas.addStaticObject([
     hemisphereLightHelper,
     directionalLightHelper,
     pointLightHelper,
     spotLightHelper,
     rectAreaLightHelper,
-  ]);
-  canvas.addLight([
     ambientLight,
     directionalLight,
     hemisphereLight,
