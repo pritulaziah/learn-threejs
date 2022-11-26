@@ -115,7 +115,10 @@ class DefaultCanvas {
   addObject(object: IDefaultObject[] | IDefaultObject) {
     const objectArray = toArray(object);
     this.objects.push(...objectArray);
-    this.addToScene(objectArray.map((obj) => obj.object));
+    const helpers = objectArray
+      .map((obj) => obj.helper())
+      .filter(Boolean) as THREE.Object3D[];
+    this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
     this.draw();
   }
 

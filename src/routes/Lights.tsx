@@ -55,109 +55,95 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // AmbientLight
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0);
-  const ambientLightObject = createObject(ambientLight, {
+  const ambientLight = createObject(new THREE.AmbientLight(0xffffff, 0), {
     debug: (object, gui) => {
       gui.addFolder("AmbientLight").add(object, "intensity", 0, 1, 0.001);
     },
   });
 
   // DirectionalLight
-  const directionalLight = new THREE.DirectionalLight(0xffff2e, 0);
-  const directionalLightObject = createObject(directionalLight, {
-    draw: (object) => {
-      object.position.set(1, 0.25, 0);
-    },
-    debug: (object, gui) => {
-      gui.addFolder("DirectionalLight").add(object, "intensity", 0, 1, 0.001);
-    },
-  });
-  const directionalLightHelper = createObject(
-    new THREE.DirectionalLightHelper(directionalLight, 0.2)
+  const directionalLight = createObject(
+    new THREE.DirectionalLight(0xffff2e, 0),
+    {
+      draw: (object) => {
+        object.position.set(1, 0.25, 0);
+      },
+      debug: (object, gui) => {
+        gui.addFolder("DirectionalLight").add(object, "intensity", 0, 1, 0.001);
+      },
+      helper: (object) => new THREE.DirectionalLightHelper(object, 0.2),
+    }
   );
 
   // HemisphereLight
-  const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0);
-  const hemisphereLightObject = createObject(hemisphereLight, {
-    debug: (object, gui) => {
-      gui.addFolder("HemisphereLight").add(object, "intensity", 0, 1, 0.001);
-    },
-  });
-  const hemisphereLightHelper = createObject(
-    new THREE.HemisphereLightHelper(hemisphereLight, 0.2)
+  const hemisphereLight = createObject(
+    new THREE.HemisphereLight(0xff0000, 0x0000ff, 0),
+    {
+      debug: (object, gui) => {
+        gui.addFolder("HemisphereLight").add(object, "intensity", 0, 1, 0.001);
+      },
+      helper: (object) => new THREE.HemisphereLightHelper(object, 0.2),
+    }
   );
 
   // PointLight
-  const pointLight = new THREE.PointLight(0xff9000, 0, 0, 0.5);
-  const pointLightObject = createObject(pointLight, {
+  const pointLight = createObject(new THREE.PointLight(0xff9000, 0, 0, 0.5), {
     draw: (object) => {
       object.position.set(1, -0.5, 1);
     },
     debug: (object, gui) => {
       gui.addFolder("PointLight").add(object, "intensity", 0, 1, 0.001);
     },
+    helper: (object) => new THREE.PointLightHelper(object, 0.2),
   });
-  const pointLightHelper = createObject(
-    new THREE.PointLightHelper(pointLight, 0.2)
-  );
 
   // RectAreaLight
-  const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 0, 2, 2);
-  const rectAreaLightObject = createObject(rectAreaLight, {
-    draw: (object) => {
-      object.position.set(0, 0, 1.5);
-      object.lookAt(new THREE.Vector3());
-    },
-    debug: (object, gui) => {
-      const folder = gui.addFolder("RectAreaLight");
-      folder.add(object, "intensity", 0, 5, 0.25);
-      folder.add(object, "width", 0, 4, 0.5);
-      folder.add(object, "height", 0, 4, 0.5);
-    },
-  });
-  const rectAreaLightHelper = createObject(
-    new RectAreaLightHelper(rectAreaLight)
+  const rectAreaLight = createObject(
+    new THREE.RectAreaLight(0x4e00ff, 0, 2, 2),
+    {
+      draw: (object) => {
+        object.position.set(0, 0, 1.5);
+        object.lookAt(new THREE.Vector3());
+      },
+      debug: (object, gui) => {
+        const folder = gui.addFolder("RectAreaLight");
+        folder.add(object, "intensity", 0, 5, 0.25);
+        folder.add(object, "width", 0, 4, 0.5);
+        folder.add(object, "height", 0, 4, 0.5);
+      },
+      helper: (object) => new RectAreaLightHelper(object),
+    }
   );
 
   // SpotLight
-  const spotLight = new THREE.SpotLight(
-    0x78ff00,
-    0,
-    10,
-    Math.PI * 0.1,
-    0.25,
-    1
+  const spotLight = createObject(
+    new THREE.SpotLight(0x78ff00, 0, 10, Math.PI * 0.1, 0.25, 1),
+    {
+      draw: (object) => {
+        object.position.set(0, 0, 3);
+      },
+      debug: (object, gui) => {
+        const folder = gui.addFolder("SpotLight");
+        folder.add(object, "intensity", 0, 1, 0.15);
+        folder.add(object, "angle", 0, Math.PI, 0.025);
+        folder.add(object, "penumbra", 0, 1, 0.1);
+        addPosition(folder, object);
+      },
+      helper: (object) => new THREE.SpotLightHelper(object),
+    }
   );
-  const spotLightObject = createObject(spotLight, {
-    draw: (object) => {
-      object.position.set(0, 0, 3);
-    },
-    debug: (object, gui) => {
-      const folder = gui.addFolder("SpotLight");
-      folder.add(object, "intensity", 0, 1, 0.15);
-      folder.add(object, "angle", 0, Math.PI, 0.025);
-      folder.add(object, "penumbra", 0, 1, 0.1);
-      addPosition(folder, object);
-    },
-  });
-  const spotLightHelper = createObject(new THREE.SpotLightHelper(spotLight));
 
   canvas.addObject([
     sphere,
     cube,
     torus,
     plane,
-    hemisphereLightHelper,
-    directionalLightHelper,
-    pointLightHelper,
-    spotLightHelper,
-    rectAreaLightHelper,
-    ambientLightObject,
-    directionalLightObject,
-    hemisphereLightObject,
-    pointLightObject,
-    rectAreaLightObject,
-    spotLightObject,
+    ambientLight,
+    directionalLight,
+    hemisphereLight,
+    pointLight,
+    rectAreaLight,
+    spotLight,
   ]);
 
   return canvas;

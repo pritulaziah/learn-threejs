@@ -29,4 +29,5 @@ export interface IDefaultObject<T extends THREE.Object3D = THREE.Object3D> {
   update(_delta: number): void;
   draw(): void;
   debug(gui: GUI): void;
+  helper(): THREE.Object3D | undefined | null;
 }

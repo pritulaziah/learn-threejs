@@ -32,7 +32,7 @@ class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
   }
 
   helper() {
-    this.options?.helper?.(this.object);
+    return this.options?.helper?.(this.object);
   }
 }
 
