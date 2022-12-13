@@ -10,7 +10,7 @@ class DefaultCanvas {
   private sizes: { width: number; height: number };
   private scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
-  private renderer: THREE.WebGLRenderer;
+  renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
   private requestId?: number;
@@ -115,9 +115,19 @@ class DefaultCanvas {
   addObject(object: IDefaultObject[] | IDefaultObject) {
     const objectArray = toArray(object);
     this.objects.push(...objectArray);
-    const helpers = objectArray
-      .map((obj) => obj.helper())
-      .filter(Boolean) as THREE.Object3D[];
+    const helpers = objectArray.reduce<THREE.Object3D<THREE.Event>[]>(
+      (result, obj) => {
+        const currentHelper = obj.helper();
+
+        if (currentHelper) {
+          const currentHelperArray = toArray(currentHelper);
+          result.push(...currentHelperArray);
+        }
+
+        return result;
+      },
+      []
+    );
     this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
     this.draw();
   }

@@ -5,7 +5,7 @@ export interface Options<T> {
   draw?: (object: T) => void;
   update?: (object: T, delta: number) => void;
   debug?: (object: T, gui: GUI) => void;
-  helper?: (object: T) => THREE.Object3D;
+  helper?: (object: T) => THREE.Object3D | THREE.Object3D[];
 }
 
 class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
