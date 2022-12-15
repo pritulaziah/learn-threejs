@@ -2,9 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { IDefaultObject } from "types/objects";
 import * as dat from "dat.gui";
-
-const toArray = <T>(entity: T | T[]): T[] =>
-  Array.isArray(entity) ? entity : [entity];
+import toArray from "utils/toArray";
 
 class DefaultCanvas {
   private sizes: { width: number; height: number };

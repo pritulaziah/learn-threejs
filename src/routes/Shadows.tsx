@@ -1,7 +1,7 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
-import { createObject } from "utils/createBasicObjects";
+import createObject from "utils/createObject";
 import ShadowsCanvas from "classes/ShadowsCanvas";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {

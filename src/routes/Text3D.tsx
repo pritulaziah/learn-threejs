@@ -5,7 +5,7 @@ import getRandomArbitrary from "utils/getRandomArbitrary";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import { IDefaultObject } from "types/objects";
-import { createObjectFunc, createObject } from "utils/createBasicObjects";
+import createObject, { createObjectFunc } from "utils/createObject";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 const drawDonut = (object: THREE.Object3D) => {

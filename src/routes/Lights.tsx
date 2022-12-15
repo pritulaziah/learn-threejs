@@ -1,7 +1,7 @@
 import Canvas from "components/Canvas";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import useCanvas from "hooks/useCanvas";
-import { createObject } from "utils/createBasicObjects";
+import createObject from "utils/createObject";
 import * as THREE from "three";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
