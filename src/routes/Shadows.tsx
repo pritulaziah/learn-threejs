@@ -20,6 +20,8 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         object.castShadow = true;
         object.shadow.mapSize.width = 1024;
         object.shadow.mapSize.height = 1024;
+        object.shadow.camera.near = 1;
+        object.shadow.camera.far = 6;
         object.position.set(2, 2, -1);
       },
       debug(object, gui) {

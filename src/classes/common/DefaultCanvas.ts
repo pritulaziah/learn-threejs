@@ -127,13 +127,6 @@ class DefaultCanvas {
       []
     );
     this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
-    this.draw();
-  }
-
-  private draw() {
-    for (const element of this.objects) {
-      element.draw();
-    }
   }
 
   destroy() {
@@ -154,7 +147,6 @@ class DefaultCanvas {
   }
 
   run() {
-    this.draw();
     this.createDebug();
     this.setSize();
     window.addEventListener("resize", this.onResize);

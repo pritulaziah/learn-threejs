@@ -17,9 +17,6 @@ class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
   constructor(object: T, options: Options<T> = {}) {
     this.object = object;
     this.options = options;
-  }
-
-  draw() {
     this.options?.draw?.(this.object);
   }
 
