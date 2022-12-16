@@ -18,7 +18,10 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   };
   const canvas = new DefaultCanvas(canvasElement);
   canvas.setCameraPosition({ z: 3 });
-  const material = new THREE.MeshStandardMaterial({ roughness: 0.4 });
+  const material = new THREE.MeshStandardMaterial({
+    roughness: 0.4,
+    side: THREE.DoubleSide,
+  });
 
   const sphere = createObject(
     new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material),

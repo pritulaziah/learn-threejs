@@ -5,7 +5,7 @@ import getRandomArbitrary from "utils/getRandomArbitrary";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import { IDefaultObject } from "types/objects";
-import createObject, { createObjectFunc } from "utils/createObject";
+import createObject from "utils/createObject";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import getRandomDir from "utils/getRandomDir";
 
@@ -39,17 +39,15 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     textGeometry.center();
     const text3D = createObject(new THREE.Mesh(textGeometry, material));
     const objects: IDefaultObject[] = [text3D];
-    const createDonutObject = createObjectFunc(
-      material,
-      new THREE.TorusGeometry(0.3, 0.2, 20, 45)
-    );
+    const geometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+
     for (let i = 0; i < 100; i++) {
       const rotationX = getRandomArbitrary(0, Math.PI);
       const rotationY = getRandomArbitrary(0, Math.PI);
       const speed = getRandomArbitrary(Number.MIN_VALUE, 0.2);
       const dir = getRandomDir();
 
-      const donut = createDonutObject({
+      const donut = createObject(new THREE.Mesh(geometry, material), {
         update(object, delta) {
           object.rotation.x = rotationX * speed * delta * dir;
           object.rotation.y = rotationY * speed * delta * dir;
