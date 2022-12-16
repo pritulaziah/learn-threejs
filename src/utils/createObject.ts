@@ -17,5 +17,5 @@ export const createObjectFunc =
   ) =>
   (options?: Options<THREE.Object3D>) => {
     const mesh = new THREE.Mesh(geometry, material);
-    return createObject(mesh, options || initOptions);
+    return createObject(mesh, { ...options, ...initOptions });
   };

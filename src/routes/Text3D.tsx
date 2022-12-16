@@ -7,17 +7,7 @@ import useCanvas from "hooks/useCanvas";
 import { IDefaultObject } from "types/objects";
 import createObject, { createObjectFunc } from "utils/createObject";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
-
-const drawDonut = (object: THREE.Object3D) => {
-  object.position.x = getRandomArbitrary(-5, 5);
-  object.position.y = getRandomArbitrary(-5, 5);
-  object.position.z = getRandomArbitrary(-5, 5);
-  object.rotation.x = getRandomArbitrary(0, Math.PI);
-  object.rotation.y = getRandomArbitrary(0, Math.PI);
-
-  const scale = Math.random();
-  object.scale.set(scale, scale, scale);
-};
+import getRandomDir from "utils/getRandomDir";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
@@ -51,11 +41,30 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     const objects: IDefaultObject[] = [text3D];
     const createDonutObject = createObjectFunc(
       material,
-      new THREE.TorusGeometry(0.3, 0.2, 20, 45),
-      { draw: drawDonut }
+      new THREE.TorusGeometry(0.3, 0.2, 20, 45)
     );
     for (let i = 0; i < 100; i++) {
-      const donut = createDonutObject();
+      const rotationX = getRandomArbitrary(0, Math.PI);
+      const rotationY = getRandomArbitrary(0, Math.PI);
+      const speed = getRandomArbitrary(Number.MIN_VALUE, 0.2);
+      const dir = getRandomDir();
+
+      const donut = createDonutObject({
+        update(object, delta) {
+          object.rotation.x = rotationX * speed * delta * dir;
+          object.rotation.y = rotationY * speed * delta * dir;
+        },
+        draw(object) {
+          object.position.x = getRandomArbitrary(-5, 5);
+          object.position.y = getRandomArbitrary(-5, 5);
+          object.position.z = getRandomArbitrary(-5, 5);
+          object.rotation.x = rotationX;
+          object.rotation.y = rotationY;
+
+          const scale = Math.random();
+          object.scale.set(scale, scale, scale);
+        },
+      });
       objects.push(donut);
     }
 
