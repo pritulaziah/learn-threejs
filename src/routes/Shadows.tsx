@@ -1,19 +1,22 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
-import createObject from "utils/createObject";
+import DefaultObject from "classes/common/DefaultObject";
 import ShadowsCanvas from "classes/ShadowsCanvas";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new ShadowsCanvas(canvasElement);
   canvas.setCameraPosition({ x: 1, y: 1, z: 2 });
-  const ambientLight = createObject(new THREE.AmbientLight(0xffffff, 0.5), {
-    debug(object, gui) {
-      const ambientLightFolder = gui.addFolder("AmbientLight");
-      ambientLightFolder.add(object, "intensity", 0, 1, 0.001);
-    },
-  });
-  const directionalLight = createObject(
+  const ambientLight = new DefaultObject(
+    new THREE.AmbientLight(0xffffff, 0.5),
+    {
+      debug(object, gui) {
+        const ambientLightFolder = gui.addFolder("AmbientLight");
+        ambientLightFolder.add(object, "intensity", 0, 1, 0.001);
+      },
+    }
+  );
+  const directionalLight = new DefaultObject(
     new THREE.DirectionalLight(0xffffff, 0.5),
     {
       draw(object) {
@@ -39,7 +42,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   const material = new THREE.MeshStandardMaterial({ roughness: 0.7 });
-  const sphere = createObject(
+  const sphere = new DefaultObject(
     new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material),
     {
       draw(object) {
@@ -47,7 +50,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       },
     }
   );
-  const plane = createObject(
+  const plane = new DefaultObject(
     new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material),
     {
       draw(object) {

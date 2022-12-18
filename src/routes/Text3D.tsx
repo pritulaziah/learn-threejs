@@ -5,15 +5,15 @@ import getRandomArbitrary from "utils/getRandomArbitrary";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import { IDefaultObject } from "types/objects";
-import createObject from "utils/createObject";
+import DefaultObject from "classes/common/DefaultObject";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import getRandomDir from "utils/getRandomDir";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
   canvas.setCameraPosition({ z: 3 });
-  const ambientLight = createObject(new THREE.AmbientLight(0xffffff, 0.5));
-  const pointLight = createObject(new THREE.PointLight(0xffffff, 0.5), {
+  const ambientLight = new DefaultObject(new THREE.AmbientLight(0xffffff, 0.5));
+  const pointLight = new DefaultObject(new THREE.PointLight(0xffffff, 0.5), {
     draw: (object) => {
       object.position.set(2, 3, 4);
     },
@@ -37,7 +37,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       bevelSegments: 5,
     });
     textGeometry.center();
-    const text3D = createObject(new THREE.Mesh(textGeometry, material));
+    const text3D = new DefaultObject(new THREE.Mesh(textGeometry, material));
     const objects: IDefaultObject[] = [text3D];
     const geometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
 
@@ -47,7 +47,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       const speed = getRandomArbitrary(Number.MIN_VALUE, 0.2);
       const dir = getRandomDir();
 
-      const donut = createObject(new THREE.Mesh(geometry, material), {
+      const donut = new DefaultObject(new THREE.Mesh(geometry, material), {
         update(object, delta) {
           object.rotation.x = rotationX * speed * delta * dir;
           object.rotation.y = rotationY * speed * delta * dir;
