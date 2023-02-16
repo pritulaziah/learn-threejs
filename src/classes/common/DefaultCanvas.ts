@@ -110,7 +110,7 @@ class DefaultCanvas {
     this.scene.add(...objects);
   }
 
-  addObject(object: IDefaultObject[] | IDefaultObject) {
+  public addObject(object: IDefaultObject[] | IDefaultObject) {
     const objectArray = toArray(object);
     this.objects.push(...objectArray);
     const helpers = objectArray.reduce<THREE.Object3D<THREE.Event>[]>(
@@ -129,7 +129,7 @@ class DefaultCanvas {
     this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
   }
 
-  destroy() {
+  public destroy() {
     this.gui.destroy();
     window.removeEventListener("resize", this.onResize);
     window.removeEventListener("dblclick", this.onOpenFullscreen);
@@ -142,11 +142,11 @@ class DefaultCanvas {
     }
   }
 
-  setCameraPosition({ x = 0, y = 0, z = 0 }) {
+  public setCameraPosition({ x = 0, y = 0, z = 0 }) {
     this.camera.position.set(x, y, z);
   }
 
-  run() {
+  public run() {
     this.createDebug();
     this.setSize();
     window.addEventListener("resize", this.onResize);

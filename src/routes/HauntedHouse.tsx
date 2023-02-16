@@ -8,17 +8,6 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new DefaultCanvas(canvasElement);
   canvas.setCameraPosition({ x: 4, y: 2, z: 5 });
   // Objects
-  const sphere = new DefaultObject(
-    new THREE.Mesh(
-      new THREE.SphereGeometry(1, 32, 32),
-      new THREE.MeshStandardMaterial({ roughness: 0.7 })
-    ),
-    {
-      draw(object) {
-        object.position.y = 1;
-      },
-    }
-  );
   const floor = new DefaultObject(
     new THREE.Mesh(
       new THREE.PlaneGeometry(20, 20),
@@ -34,7 +23,19 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       },
     }
   );
-  const objects = [sphere, floor];
+  const houseGroup = new THREE.Group();
+  const walls = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 2.5, 4),
+    new THREE.MeshStandardMaterial({ color: "#ac8382" })
+  );
+  walls.position.y = 1.25;
+  houseGroup.add(walls);
+
+  const house = new DefaultObject(houseGroup, {
+    debug(object, gui) {},
+  });
+
+  const objects = [floor, house];
   // Lights
   const ambientLight = new DefaultObject(
     new THREE.AmbientLight(0xffffff, 0.5),
