@@ -6,14 +6,14 @@ import toArray from "utils/toArray";
 
 class DefaultCanvas {
   private sizes: { width: number; height: number };
-  private scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
+  public scene: THREE.Scene;
+  public camera: THREE.PerspectiveCamera;
+  public renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
   private clock: THREE.Clock;
   private requestId?: number;
-  objects: IDefaultObject[];
-  gui: dat.GUI;
+  public objects: IDefaultObject[];
+  public gui: dat.GUI;
 
   constructor(canvas: HTMLCanvasElement) {
     // Request animation frame id
@@ -136,7 +136,7 @@ class DefaultCanvas {
     this.requestId != null && cancelAnimationFrame(this.requestId);
   }
 
-  createDebug() {
+  public createDebug() {
     for (let obj of this.objects) {
       obj.debug(this.gui);
     }

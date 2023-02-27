@@ -1,6 +1,6 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
-import DefaultCanvas from "classes/common/DefaultCanvas";
+import HauntedHouseCanvas from "classes/HauntedHouseCanvas";
 import * as THREE from "three";
 import DefaultObject from "classes/common/DefaultObject";
 
@@ -13,7 +13,7 @@ const GRAVE_WIDTH = 0.6;
 const GRAVE_HEIGHT = 0.8;
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
+  const canvas = new HauntedHouseCanvas(canvasElement);
   canvas.setCameraPosition({ x: 4, y: 2, z: 5 });
   // Objects
   const floor = new DefaultObject(
@@ -88,15 +88,19 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     grave.rotation.z = (Math.random() - 0.5) * 0.4;
     graves.add(grave);
   }
+  // Door light
+  const doorLight = new THREE.PointLight("#ff7d46", 1, 7);
+  doorLight.position.set(0, 2.2, 2.7);
 
   // Add all
-  house.add(walls, roof, door, bushes, graves);
+  house.add(walls, roof, door, bushes, graves, doorLight);
   const houseObject = new DefaultObject(house);
-
   const objects = [floor, houseObject];
   // Lights
+  const lightColor = "#b9d5ff";
+  const lightIntensity = 0.12;
   const ambientLight = new DefaultObject(
-    new THREE.AmbientLight(0xffffff, 0.5),
+    new THREE.AmbientLight(lightColor, lightIntensity),
     {
       debug(object, gui) {
         gui.addFolder("AmbientLight").add(object, "intensity", 0, 1, 0.001);
@@ -104,7 +108,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     }
   );
   const moonLight = new DefaultObject(
-    new THREE.DirectionalLight(0xffffff, 0.5),
+    new THREE.DirectionalLight(lightColor, lightIntensity),
     {
       draw(object) {
         object.position.set(4, 5, -2);
