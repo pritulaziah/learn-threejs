@@ -173,10 +173,36 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     // Door light
     const doorLight = new THREE.PointLight("#ff7d46", 1, 7);
     doorLight.position.set(0, 2.2, 2.7);
+    // Ghosts
+    const ghost1 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+      update(object, delta) {
+        const angle = delta * 0.5;
+        object.position.x = Math.cos(angle) * 4;
+        object.position.y = Math.sin(delta * 3);
+        object.position.z = Math.sin(angle) * 4;
+      },
+    });
+    const ghost2 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+      update(object, delta) {
+        const angle = delta * -0.32;
+        object.position.x = Math.cos(angle) * 5;
+        object.position.y = Math.sin(delta * 4) + Math.sin(delta * 2.5);
+        object.position.z = Math.sin(angle) * 5;
+      },
+    });
+    const ghost3 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+      update(object, delta) {
+        const angle = delta * 0.18;
+        object.position.x = Math.cos(angle) * (7 + Math.sin(delta * 0.32));
+        object.position.y = Math.sin(delta * 5) + Math.sin(delta * 2);
+        object.position.z = Math.sin(angle) * (7 + Math.sin(delta * 2.5));
+      },
+    });
+    const ghosts = [ghost1, ghost2, ghost3];
     // Add all
     house.add(walls, roof, door, bushes, graves, doorLight);
     // Add to canvas
-    canvas.addObject([floor, new DefaultObject(house)]);
+    canvas.addObject([floor, ...ghosts, new DefaultObject(house)]);
   });
 
   // Lights
