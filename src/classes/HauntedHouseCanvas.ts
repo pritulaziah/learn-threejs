@@ -11,6 +11,8 @@ class HauntedHouseCanvas extends DefaultCanvas {
 
   run() {
     this.renderer.setClearColor(HauntedHouseCanvas.fogColor);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     super.run();
   }
 }

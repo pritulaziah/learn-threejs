@@ -79,6 +79,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       ),
       {
         draw(object) {
+          object.receiveShadow = true;
           object.geometry.attributes.uv2 = new THREE.Float32BufferAttribute(
             (
               object.geometry.attributes.uv as THREE.Float32BufferAttribute
@@ -100,6 +101,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         roughnessMap: bricksRoughnessTexture,
       })
     );
+    walls.castShadow = true;
     walls.geometry.attributes.uv2 = new THREE.Float32BufferAttribute(
       (walls.geometry.attributes.uv as THREE.Float32BufferAttribute).array,
       2
@@ -141,15 +143,19 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     const bush1 = new THREE.Mesh(bushGeometry, bushMaterial);
     bush1.scale.set(0.5, 0.5, 0.5);
     bush1.position.set(0.8, 0.2, 2.2);
+    bush1.castShadow = true;
     const bush2 = new THREE.Mesh(bushGeometry, bushMaterial);
     bush2.scale.set(0.25, 0.25, 0.25);
     bush2.position.set(1.4, 0.1, 2.1);
+    bush2.castShadow = true;
     const bush3 = new THREE.Mesh(bushGeometry, bushMaterial);
     bush3.scale.set(0.4, 0.4, 0.4);
     bush3.position.set(-0.8, 0.1, 2.2);
+    bush3.castShadow = true;
     const bush4 = new THREE.Mesh(bushGeometry, bushMaterial);
     bush4.scale.set(0.15, 0.15, 0.15);
     bush4.position.set(-1, 0.05, 2.6);
+    bush4.castShadow = true;
     bushes.add(bush1, bush2, bush3, bush4);
     // Graves
     const graves = new THREE.Group();
@@ -168,13 +174,25 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       grave.position.set(x, GRAVE_HEIGHT / 2 - 0.1, z);
       grave.rotation.x = (Math.random() - 0.5) * 0.4;
       grave.rotation.z = (Math.random() - 0.5) * 0.4;
+      grave.castShadow = true;
       graves.add(grave);
     }
     // Door light
     const doorLight = new THREE.PointLight("#ff7d46", 1, 7);
     doorLight.position.set(0, 2.2, 2.7);
+    doorLight.castShadow = true;
+    doorLight.shadow.mapSize.width = 256;
+    doorLight.shadow.mapSize.height = 256;
+    doorLight.shadow.camera.far = 7;
     // Ghosts
-    const ghost1 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+    function drawGhost(object: THREE.PointLight) {
+      object.castShadow = true;
+      object.shadow.mapSize.width = 256;
+      object.shadow.mapSize.height = 256;
+    }
+    const light = new THREE.PointLight("#ffffff", 2, 3);
+    const ghost1 = new DefaultObject(light.clone(), {
+      draw: drawGhost,
       update(object, delta) {
         const angle = delta * 0.5;
         object.position.x = Math.cos(angle) * 4;
@@ -182,7 +200,8 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         object.position.z = Math.sin(angle) * 4;
       },
     });
-    const ghost2 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+    const ghost2 = new DefaultObject(light.clone(), {
+      draw: drawGhost,
       update(object, delta) {
         const angle = delta * -0.32;
         object.position.x = Math.cos(angle) * 5;
@@ -190,7 +209,8 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         object.position.z = Math.sin(angle) * 5;
       },
     });
-    const ghost3 = new DefaultObject(new THREE.PointLight("#ffffff", 2, 3), {
+    const ghost3 = new DefaultObject(light.clone(), {
+      draw: drawGhost,
       update(object, delta) {
         const angle = delta * 0.18;
         object.position.x = Math.cos(angle) * (7 + Math.sin(delta * 0.32));
@@ -221,6 +241,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     {
       draw(object) {
         object.position.set(4, 5, -2);
+        object.castShadow = true;
       },
       debug(object, gui) {
         const moonFolder = gui.addFolder("Moon");
