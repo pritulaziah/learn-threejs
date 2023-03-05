@@ -4,7 +4,7 @@ import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
 import DefaultObject from "classes/common/DefaultObject";
 
-const COUNT_PARTICLES = 5000;
+const COUNT_PARTICLES = 20000;
 const RANGE = 10;
 const mathUtils = THREE.MathUtils;
 
@@ -49,7 +49,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     // alphaTest: 0.001,
     // depthTest: false,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    // blending: THREE.AdditiveBlending,
     vertexColors: true,
   });
   const particles = new DefaultObject(
@@ -68,6 +68,17 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
           .onChange((value: number) => {
             object.material.size = value;
           });
+      },
+      update(object, delta) {
+        const { position } = object.geometry.attributes;
+
+        for (let i = 0; i < COUNT_PARTICLES; i++) {
+          if (position instanceof THREE.BufferAttribute) {
+            const x = position.getX(i);
+            position.setY(i, Math.sin(delta + x));
+          }
+        }
+        position.needsUpdate = true;
       },
     }
   );
