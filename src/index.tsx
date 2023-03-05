@@ -8,6 +8,7 @@ import Text3DPage from "routes/Text3D";
 import Lights from "routes/Lights";
 import ShadowsPage from "routes/Shadows";
 import HauntedHouse from "routes/HauntedHouse";
+import Particles from "routes/Particles";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: Routes.HauntedHouse,
     element: <HauntedHouse />,
+  },
+  {
+    path: Routes.Particles,
+    element: <Particles />,
   },
 ]);
 
