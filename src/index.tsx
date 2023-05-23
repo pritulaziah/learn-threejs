@@ -5,10 +5,11 @@ import "./index.css";
 import Routes from "constants/route";
 import IndexPage from "routes/Index";
 import Text3DPage from "routes/Text3D";
-import Lights from "routes/Lights";
+import LightsPage from "routes/Lights";
 import ShadowsPage from "routes/Shadows";
-import HauntedHouse from "routes/HauntedHouse";
-import Particles from "routes/Particles";
+import HauntedHousePage from "routes/HauntedHouse";
+import ParticlesPage from "routes/Particles";
+import GalaxyGeneratorPage from "routes/GalaxyGenerator";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
   },
   {
     path: Routes.Lights,
-    element: <Lights />,
+    element: <LightsPage />,
   },
   {
     path: Routes.Shadows,
@@ -29,12 +30,16 @@ const router = createBrowserRouter([
   },
   {
     path: Routes.HauntedHouse,
-    element: <HauntedHouse />,
+    element: <HauntedHousePage />,
   },
   {
     path: Routes.Particles,
-    element: <Particles />,
+    element: <ParticlesPage />,
   },
+  {
+    path: Routes.GalaxyGenerator,
+    element: <GalaxyGeneratorPage />,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

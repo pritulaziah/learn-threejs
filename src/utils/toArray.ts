@@ -1,4 +1,5 @@
-const toArray = <T>(entity: T | T[]): T[] =>
-  Array.isArray(entity) ? entity : [entity];
+function toArray<T>(entity: T | T[]): T[] {
+  return Array.isArray(entity) ? entity : [entity];
+}
 
 export default toArray;

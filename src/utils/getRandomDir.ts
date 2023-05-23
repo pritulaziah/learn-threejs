@@ -1,6 +1,6 @@
-import getRandomInt from "./getRandomInt";
+import getRandomInt from "utils/getRandomInt";
 
-const getRandomDir = () => {
+function getRandomDir() {
   let result = 0;
 
   while (result === 0) {

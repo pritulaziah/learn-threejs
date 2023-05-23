@@ -1,4 +1,5 @@
-const getRandomArbitrary = (min: number, max: number) =>
-  Math.random() * (max - min) + min;
+function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
 
 export default getRandomArbitrary;
