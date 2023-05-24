@@ -14,8 +14,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
 
   const textureLoader = new THREE.TextureLoader();
   const particleTexture = textureLoader.load("assets/textures/particles/2.png");
-
-  const particlesGeometry = new THREE.BufferGeometry();
+  const geometry = new THREE.BufferGeometry();
   const vertices = [];
   const colors = [];
 
@@ -31,16 +30,13 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     );
   }
 
-  particlesGeometry.setAttribute(
+  geometry.setAttribute(
     "position",
     new THREE.Float32BufferAttribute(vertices, 3)
   );
-  particlesGeometry.setAttribute(
-    "color",
-    new THREE.Float32BufferAttribute(colors, 3)
-  );
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
-  const particlesMaterial = new THREE.PointsMaterial({
+  const material = new THREE.PointsMaterial({
     size: 0.1,
     sizeAttenuation: true,
     map: particleTexture,
@@ -52,36 +48,33 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     // blending: THREE.AdditiveBlending,
     vertexColors: true,
   });
-  const particles = new DefaultObject(
-    new THREE.Points(particlesGeometry, particlesMaterial),
-    {
-      debug(object, gui) {
-        const folder = gui.addFolder("Points");
-        folder
-          .add(object.material, "sizeAttenuation")
-          .onChange((value: boolean) => {
-            object.material.sizeAttenuation = value;
-            object.material.needsUpdate = true;
-          });
-        folder
-          .add(object.material, "size", 0.01, 5, 0.01)
-          .onChange((value: number) => {
-            object.material.size = value;
-          });
-      },
-      update(object, delta) {
-        const { position } = object.geometry.attributes;
+  const particles = new DefaultObject(new THREE.Points(geometry, material), {
+    debug(object, gui) {
+      const folder = gui.addFolder("Points");
+      folder
+        .add(object.material, "sizeAttenuation")
+        .onChange((value: boolean) => {
+          object.material.sizeAttenuation = value;
+          object.material.needsUpdate = true;
+        });
+      folder
+        .add(object.material, "size", 0.01, 5, 0.01)
+        .onChange((value: number) => {
+          object.material.size = value;
+        });
+    },
+    update(object, delta) {
+      const { position } = object.geometry.attributes;
 
+      if (position instanceof THREE.BufferAttribute) {
         for (let i = 0; i < COUNT_PARTICLES; i++) {
-          if (position instanceof THREE.BufferAttribute) {
-            const x = position.getX(i);
-            position.setY(i, Math.sin(delta + x));
-          }
+          const x = position.getX(i);
+          position.setY(i, Math.sin(delta + x));
         }
-        position.needsUpdate = true;
-      },
-    }
-  );
+      }
+      position.needsUpdate = true;
+    },
+  });
   canvas.addObject(particles);
 
   return canvas;
