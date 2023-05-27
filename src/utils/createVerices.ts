@@ -1,3 +1,12 @@
+import * as THREE from "three";
+
+/**
+ * Creates vertices for a 3D object.
+ *
+ * @param count - The number of vertices to create.
+ * @param createCoordinate - A function that generates a random coordinate value.
+ * @returns The buffer attribute containing the vertices.
+ */
 function createVerices(count: number, createCoordinate: () => number) {
   const vertices = [];
 
@@ -8,7 +17,7 @@ function createVerices(count: number, createCoordinate: () => number) {
     vertices.push(x, y, z);
   }
 
-  return vertices;
+  return new THREE.Float32BufferAttribute(vertices, 3);
 }
 
 export default createVerices;

@@ -131,6 +131,7 @@ class DefaultCanvas {
 
   public destroy() {
     this.gui.destroy();
+    this.renderer.dispose();
     window.removeEventListener("resize", this.onResize);
     window.removeEventListener("dblclick", this.onOpenFullscreen);
     this.requestId != null && cancelAnimationFrame(this.requestId);
