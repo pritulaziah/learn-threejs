@@ -1,31 +1,31 @@
 import * as THREE from "three";
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
-import createVerices from "utils/createVerices";
 import needUpdateMaterial from "utils/needUpdateMaterial";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import DefaultObject from "classes/common/DefaultObject";
 
-const RANGE = 3;
+type GalaxyOptions = {
+  count: number;
+  size: number;
+  radius: number;
+  branches: number;
+}
+
 const mathUtils = THREE.MathUtils;
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const options = {
+  const options: GalaxyOptions = {
     count: 1000,
     size: 0.02,
+    radius: 5,
+    branches: 3,
   };
 
   const canvas = new DefaultCanvas(canvasElement);
   canvas.setCameraPosition({ x: 3, y: 3, z: 3 });
 
   const geometry = new THREE.BufferGeometry();
-
-  const createCoordinate = () => mathUtils.randFloatSpread(RANGE);
-
-  const setPositon = (geometry: THREE.BufferGeometry) => {
-    const position = createVerices(options.count, createCoordinate);
-    geometry.setAttribute("position", position);
-  };
 
   const material = new THREE.PointsMaterial({
     size: options.size,
@@ -34,9 +34,36 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     blending: THREE.AdditiveBlending,
   });
 
+  const createVerices = (options: GalaxyOptions) => {
+    const vertices = [];
+
+    for (let i = 0; i < options.count; i++) {
+      const angleBetweenSectors = (2 * Math.PI) / options.branches;
+      const angle = angleBetweenSectors * i;
+      const radius = mathUtils.randFloat(0, options.radius);
+
+      const x = radius * Math.cos(angle);
+      const y = 0;
+      const z = radius * Math.sin(angle);
+      vertices.push(x, y, z);
+    }
+
+    return vertices;
+  }
+
+  const setPositon = (geometry: THREE.BufferGeometry, verices: number[]) => {
+    const position = new THREE.Float32BufferAttribute(verices, 3);
+    geometry.setAttribute("position", position);
+  };
+
+  const updatePosition = (object: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>) => {
+    setPositon(object.geometry, createVerices(options));
+    needUpdateMaterial(object.material);
+  }
+
   const particles = new DefaultObject(new THREE.Points(geometry, material), {
     draw: (object) => {
-      setPositon(object.geometry);
+      setPositon(object.geometry, createVerices(options));
     },
     debug: (object, gui) => {
       const folder = gui.addFolder("Galaxy");
@@ -45,10 +72,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         .min(100)
         .max(10000)
         .step(100)
-        .onFinishChange(() => {
-          setPositon(object.geometry);
-          needUpdateMaterial(object.material);
-        });
+        .onFinishChange(() => updatePosition(object));
       folder
         .add(options, "size")
         .min(0.001)
@@ -58,6 +82,18 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
           object.material.size = options.size;
           needUpdateMaterial(object.material);
         });
+      folder
+        .add(options, "radius")
+        .min(1)
+        .max(20)
+        .step(1)
+        .onFinishChange(() => updatePosition(object));
+      folder
+        .add(options, "branches")
+        .min(2)
+        .max(9)
+        .step(1)
+        .onFinishChange(() => updatePosition(object));
       folder.open();
     },
   });
