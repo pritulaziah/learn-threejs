@@ -11,6 +11,7 @@ type GalaxyOptions = {
   radius: number;
   branches: number;
   spin: number;
+  randomness: number;
 }
 
 const mathUtils = THREE.MathUtils;
@@ -22,6 +23,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     radius: 5,
     branches: 3,
     spin: 1,
+    randomness: 0.2,
   };
 
   const canvas = new DefaultCanvas(canvasElement);
@@ -45,9 +47,13 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       const radius = mathUtils.randFloat(0, options.radius);
       const spinAngle = radius * options.spin;
 
-      const x = radius * Math.cos(angle + spinAngle);
-      const y = 0;
-      const z = radius * Math.sin(angle + spinAngle);
+      const randomX = mathUtils.randFloatSpread(2) * options.randomness * radius;
+      const randomY = mathUtils.randFloatSpread(2) * options.randomness * radius;
+      const randomZ = mathUtils.randFloatSpread(2) * options.randomness * radius;
+
+      const x = radius * Math.cos(angle + spinAngle) + randomX;
+      const y = randomY;
+      const z = radius * Math.sin(angle + spinAngle) + randomZ;
       vertices.push(x, y, z);
     }
 
@@ -101,6 +107,12 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         .add(options, "spin")
         .min(-5)
         .max(5)
+        .step(0.001)
+        .onFinishChange(() => updatePosition(object));
+      folder
+        .add(options, "randomness")
+        .min(0)
+        .max(2)
         .step(0.001)
         .onFinishChange(() => updatePosition(object));
       folder.open();
