@@ -129,6 +129,11 @@ class DefaultCanvas {
     this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
   }
 
+  public addStaticObject(object: THREE.Object3D<THREE.Event> | THREE.Object3D<THREE.Event>[]) {
+    const objectArray = toArray(object);
+    this.addToScene(objectArray);
+  }
+
   public destroy() {
     this.gui.destroy();
     this.renderer.dispose();
