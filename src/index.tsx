@@ -10,6 +10,7 @@ import ShadowsPage from "routes/Shadows";
 import HauntedHousePage from "routes/HauntedHouse";
 import ParticlesPage from "routes/Particles";
 import GalaxyGeneratorPage from "routes/GalaxyGenerator";
+import PhysicsPage from "routes/PhysicsPage";
 
 const router = createBrowserRouter([
   {
@@ -39,7 +40,11 @@ const router = createBrowserRouter([
   {
     path: Routes.GalaxyGenerator,
     element: <GalaxyGeneratorPage />,
-  }
+  },
+  {
+    path: Routes.Physics,
+    element: <PhysicsPage />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
