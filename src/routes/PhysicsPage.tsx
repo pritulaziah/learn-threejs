@@ -1,16 +1,18 @@
 import * as THREE from "three";
+import * as CANNON from "cannon-es";
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import PhysicsCanvas from "classes/PhysicsCanvas";
+import DefaultObject from "classes/common/DefaultObject";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const canvas = new PhysicsCanvas(canvasElement);
-  canvas.setCameraPosition({ x: -3, y: 3, z: 3 });
+  canvas.setCameraPosition({ x: -5, y: 5, z: 5 });
+  canvas.word.gravity.set(0, -9.82, 0);
 
   // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
   canvas.addStaticObject(ambientLight);
-
   const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.set(1024, 1024);
@@ -22,6 +24,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   directionalLight.position.set(5, 5, 5);
   canvas.addStaticObject(directionalLight);
 
+  // Textures
   const cubeTextureLoader = new THREE.CubeTextureLoader();
   const environmentMapTexture = cubeTextureLoader.load([
     "assets/textures/environmentMaps/0/px.png",
@@ -32,6 +35,15 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     "assets/textures/environmentMaps/0/nz.png",
   ]);
 
+  // Floor
+  const FLOOR_ROTATION_X = -Math.PI / 2;
+  const floorShape = new CANNON.Plane();
+  const floorBody = new CANNON.Body({
+    type: CANNON.Body.STATIC,
+    shape: floorShape,
+  });
+  floorBody.quaternion.setFromEuler(FLOOR_ROTATION_X, 0, 0);
+  canvas.word.addBody(floorBody);
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(10, 10),
     new THREE.MeshStandardMaterial({
@@ -43,21 +55,50 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     })
   );
   floor.receiveShadow = true;
-  floor.rotation.x = -Math.PI * 0.5;
+  floor.rotation.x = FLOOR_ROTATION_X;
 
-  const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 32, 32),
-    new THREE.MeshStandardMaterial({
-      metalness: 0.3,
-      roughness: 0.4,
-      envMap: environmentMapTexture,
-      envMapIntensity: 0.5,
-    })
+  // Sphere
+  const SPHERE_RADIUS = 0.5;
+  const sphereShape = new CANNON.Sphere(SPHERE_RADIUS);
+  const sphereBody = new CANNON.Body({
+    mass: 5,
+    position: new CANNON.Vec3(0, 10, 0),
+    shape: sphereShape,
+  });
+  canvas.word.addBody(sphereBody);
+  const sphere = new DefaultObject(
+    new THREE.Mesh(
+      new THREE.SphereGeometry(SPHERE_RADIUS, 32, 32),
+      new THREE.MeshStandardMaterial({
+        metalness: 0.3,
+        roughness: 0.4,
+        envMap: environmentMapTexture,
+        envMapIntensity: 0.5,
+      })
+    ),
+    {
+      update(object, elapsedTime) {
+        const deltaTime = elapsedTime - canvas.oldElapsedTime;
+        canvas.oldElapsedTime = elapsedTime;
+        canvas.word.step(1 / 60, deltaTime, 3);
+        // canvas.word.fixedStep();
+
+        object.position.set(
+          sphereBody.position.x,
+          sphereBody.position.y,
+          sphereBody.position.z
+        );
+      },
+      draw(object) {
+        object.castShadow = true;
+        object.position.y = 0.5;
+      },
+    }
   );
-  sphere.castShadow = true;
-  sphere.position.y = 0.5;
 
-  canvas.addStaticObject([floor, sphere]);
+  // Add objects to canvas
+  canvas.addStaticObject(floor);
+  canvas.addObject(sphere);
 
   return canvas;
 };
