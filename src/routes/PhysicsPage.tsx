@@ -35,6 +35,19 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     "assets/textures/environmentMaps/0/nz.png",
   ]);
 
+  // Material
+  const physicsMaterial = new CANNON.Material();
+  const physicsContactMaterial = new CANNON.ContactMaterial(
+    physicsMaterial,
+    physicsMaterial,
+    {
+      friction: 0.2,
+      restitution: 0.4,
+    }
+  );
+  canvas.word.addContactMaterial(physicsContactMaterial);
+  canvas.word.defaultContactMaterial = physicsContactMaterial;
+
   // Floor
   const FLOOR_ROTATION_X = -Math.PI / 2;
   const floorShape = new CANNON.Plane();
@@ -52,6 +65,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       roughness: 0.4,
       envMap: environmentMapTexture,
       envMapIntensity: 0.5,
+      side: THREE.DoubleSide,
     })
   );
   floor.receiveShadow = true;
