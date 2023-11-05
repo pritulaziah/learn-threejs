@@ -2,10 +2,11 @@ import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
 import DefaultObject from "classes/common/DefaultObject";
-import ShadowsCanvas from "classes/ShadowsCanvas";
+import DefaultCanvas from "classes/common/DefaultCanvas";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new ShadowsCanvas(canvasElement);
+  const canvas = new DefaultCanvas(canvasElement);
+  canvas.renderer.shadowMap.enabled = true;
   canvas.setCameraPosition({ x: 1, y: 1, z: 2 });
   const ambientLight = new DefaultObject(
     new THREE.AmbientLight(0xffffff, 0.5),

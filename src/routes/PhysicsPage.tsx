@@ -2,13 +2,14 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
-import PhysicsCanvas from "classes/PhysicsCanvas";
+import PhysicsCanvas from "classes/common/PhysicsCanvas";
 import DefaultObject from "classes/common/DefaultObject";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new PhysicsCanvas(canvasElement);
+  const canvas = new PhysicsCanvas(canvasElement, {
+    gravity: new CANNON.Vec3(0, -9.82, 0),
+  });
   canvas.setCameraPosition({ x: -5, y: 5, z: 5 });
-  canvas.word.gravity.set(0, -9.82, 0);
 
   // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -91,11 +92,8 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       })
     ),
     {
-      update(object, elapsedTime) {
-        const deltaTime = elapsedTime - canvas.oldElapsedTime;
-        canvas.oldElapsedTime = elapsedTime;
-        canvas.word.step(1 / 60, deltaTime, 3);
-        // canvas.word.fixedStep();
+      update(object) {
+        sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position);
 
         object.position.set(
           sphereBody.position.x,

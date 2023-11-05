@@ -1,14 +1,14 @@
-import DefaultCanvas from "./common/DefaultCanvas";
+import DefaultCanvas from "./DefaultCanvas";
 import * as THREE from "three";
-import { World } from "cannon-es";
+import { World, WorldOptions } from "cannon-es";
 
 class PhysicsCanvas extends DefaultCanvas {
   word: World;
   _oldElapsedTime: number;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, options?: WorldOptions) {
     super(canvas);
-    this.word = new World();
+    this.word = new World(options);
     this._oldElapsedTime = 0;
   }
 
@@ -20,7 +20,14 @@ class PhysicsCanvas extends DefaultCanvas {
     this._oldElapsedTime = elapsedTime;
   }
 
-  run() {
+  public customAnimate = (elapsedTime: number) => {
+    const deltaTime = elapsedTime - this.oldElapsedTime;
+    this.oldElapsedTime = elapsedTime;
+    this.word.step(1 / 60, deltaTime, 3);
+    // canvas.word.fixedStep();
+  };
+
+  public run() {
     // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;

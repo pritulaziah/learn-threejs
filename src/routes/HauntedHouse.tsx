@@ -1,8 +1,8 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
-import HauntedHouseCanvas from "classes/HauntedHouseCanvas";
 import * as THREE from "three";
 import DefaultObject from "classes/common/DefaultObject";
+import DefaultCanvas from "classes/common/DefaultCanvas";
 
 const WORLD_SIZE = 20;
 const HOUSE_HEIGHT = 2.5;
@@ -12,10 +12,15 @@ const DOOR_HEIGHT = 2.2;
 const DOOR_WIDTH = 2.2;
 const GRAVE_WIDTH = 0.6;
 const GRAVE_HEIGHT = 0.8;
+const FOG_COLOR = "#262837";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const textureLoader = new THREE.TextureLoader();
-  const canvas = new HauntedHouseCanvas(canvasElement);
+  const canvas = new DefaultCanvas(canvasElement);
+  canvas.scene.fog = new THREE.Fog(FOG_COLOR, 1, 15);
+  canvas.renderer.setClearColor(FOG_COLOR);
+  canvas.renderer.shadowMap.enabled = true;
+  canvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   canvas.setCameraPosition({ x: 4, y: 2, z: 5 });
   Promise.all([
     textureLoader.loadAsync("assets/textures/door/color.jpg"),
