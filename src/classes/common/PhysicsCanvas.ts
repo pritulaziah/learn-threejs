@@ -20,7 +20,7 @@ class PhysicsCanvas extends DefaultCanvas {
     this._oldElapsedTime = elapsedTime;
   }
 
-  public customAnimate = (elapsedTime: number) => {
+  protected customAnimate(elapsedTime: number) {
     const deltaTime = elapsedTime - this.oldElapsedTime;
     this.oldElapsedTime = elapsedTime;
     this.word.step(1 / 60, deltaTime, 3);

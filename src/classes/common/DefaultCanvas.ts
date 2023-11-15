@@ -93,7 +93,7 @@ class DefaultCanvas {
     }
   };
 
-  public customAnimate(_: number) {}
+  protected customAnimate(_: number) {}
 
   private animate = () => {
     this.requestId = requestAnimationFrame(this.animate);
@@ -110,7 +110,7 @@ class DefaultCanvas {
     this.stats.update();
   };
 
-  private addToScene(objects: THREE.Object3D[]) {
+  public addToScene(objects: THREE.Object3D[]) {
     this.scene.add(...objects);
   }
 
