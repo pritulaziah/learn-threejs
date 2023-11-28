@@ -58,7 +58,7 @@ class GalaxyGeneratorCanvas extends DefaultCanvas {
   };
 
   constructor(canvas: HTMLCanvasElement) {
-    super(canvas);
+    super(canvas, { cameraPositon: { x: 3, y: 3, z: 3 } });
     this.options = {
       count: 1000,
       size: 0.02,
@@ -131,7 +131,6 @@ class GalaxyGeneratorCanvas extends DefaultCanvas {
   run() {
     this.addToScene([this.particles]);
     this.setPositon();
-    this.setCameraPosition({ x: 3, y: 3, z: 3 });
     super.run();
   }
 }

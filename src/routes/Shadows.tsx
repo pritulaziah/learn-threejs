@@ -1,14 +1,15 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
-import DefaultObject from "classes/common/DefaultObject";
+import UpdateObject from "classes/common/UpdateObject";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
+  const canvas = new DefaultCanvas(canvasElement, {
+    cameraPositon: { x: 1, y: 1, z: 2 },
+  });
   canvas.renderer.shadowMap.enabled = true;
-  canvas.setCameraPosition({ x: 1, y: 1, z: 2 });
-  const ambientLight = new DefaultObject(
+  const ambientLight = new UpdateObject(
     new THREE.AmbientLight(0xffffff, 0.5),
     {
       debug(object, gui) {
@@ -17,7 +18,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       },
     }
   );
-  const directionalLight = new DefaultObject(
+  const directionalLight = new UpdateObject(
     new THREE.DirectionalLight(0xffffff, 0.5),
     {
       draw(object) {
@@ -43,7 +44,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   const material = new THREE.MeshStandardMaterial({ roughness: 0.7 });
-  const sphere = new DefaultObject(
+  const sphere = new UpdateObject(
     new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material),
     {
       draw(object) {
@@ -51,7 +52,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       },
     }
   );
-  const plane = new DefaultObject(
+  const plane = new UpdateObject(
     new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material),
     {
       draw(object) {

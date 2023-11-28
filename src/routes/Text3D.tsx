@@ -4,16 +4,15 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import getRandomArbitrary from "utils/getRandomArbitrary";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
-import { IDefaultObject } from "types/objects";
-import DefaultObject from "classes/common/DefaultObject";
+import { IUpdateObject } from "types/objects";
+import UpdateObject from "classes/common/UpdateObject";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import getRandomDir from "utils/getRandomDir";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
-  canvas.setCameraPosition({ z: 3 });
-  const ambientLight = new DefaultObject(new THREE.AmbientLight(0xffffff, 0.5));
-  const pointLight = new DefaultObject(new THREE.PointLight(0xffffff, 0.5), {
+  const canvas = new DefaultCanvas(canvasElement, { cameraPositon: { z: 3 } });
+  const ambientLight = new UpdateObject(new THREE.AmbientLight(0xffffff, 0.5));
+  const pointLight = new UpdateObject(new THREE.PointLight(0xffffff, 0.5), {
     draw: (object) => {
       object.position.set(2, 3, 4);
     },
@@ -37,8 +36,8 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       bevelSegments: 5,
     });
     textGeometry.center();
-    const text3D = new DefaultObject(new THREE.Mesh(textGeometry, material));
-    const objects: IDefaultObject[] = [text3D];
+    const text3D = new UpdateObject(new THREE.Mesh(textGeometry, material));
+    const objects: IUpdateObject[] = [text3D];
     const geometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
 
     for (let i = 0; i < 100; i++) {
@@ -47,7 +46,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       const speed = getRandomArbitrary(Number.MIN_VALUE, 0.2);
       const dir = getRandomDir();
 
-      const donut = new DefaultObject(new THREE.Mesh(geometry, material), {
+      const donut = new UpdateObject(new THREE.Mesh(geometry, material), {
         update(object, delta) {
           object.rotation.x = rotationX * speed * delta * dir;
           object.rotation.y = rotationY * speed * delta * dir;

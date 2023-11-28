@@ -1,7 +1,7 @@
 import Canvas from "components/Canvas";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import useCanvas from "hooks/useCanvas";
-import DefaultObject from "classes/common/DefaultObject";
+import UpdateObject from "classes/common/UpdateObject";
 import * as THREE from "three";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
@@ -16,14 +16,13 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     object.rotation.x = 0.1 * delta;
     object.rotation.y = 0.15 * delta;
   };
-  const canvas = new DefaultCanvas(canvasElement);
-  canvas.setCameraPosition({ z: 3 });
+  const canvas = new DefaultCanvas(canvasElement, { cameraPositon: { z: 3 } });
   const material = new THREE.MeshStandardMaterial({
     roughness: 0.4,
     side: THREE.DoubleSide,
   });
 
-  const sphere = new DefaultObject(
+  const sphere = new UpdateObject(
     new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material),
     {
       draw: (object) => {
@@ -32,13 +31,13 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       update,
     }
   );
-  const cube = new DefaultObject(
+  const cube = new UpdateObject(
     new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), material),
     {
       update,
     }
   );
-  const torus = new DefaultObject(
+  const torus = new UpdateObject(
     new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 32, 64), material),
     {
       draw: (object) => {
@@ -47,7 +46,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       update,
     }
   );
-  const plane = new DefaultObject(
+  const plane = new UpdateObject(
     new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material),
     {
       draw: (object) => {
@@ -58,14 +57,14 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // AmbientLight
-  const ambientLight = new DefaultObject(new THREE.AmbientLight(0xffffff, 0), {
+  const ambientLight = new UpdateObject(new THREE.AmbientLight(0xffffff, 0), {
     debug: (object, gui) => {
       gui.addFolder("AmbientLight").add(object, "intensity", 0, 1, 0.001);
     },
   });
 
   // DirectionalLight
-  const directionalLight = new DefaultObject(
+  const directionalLight = new UpdateObject(
     new THREE.DirectionalLight(0xffff2e, 0),
     {
       draw: (object) => {
@@ -79,7 +78,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // HemisphereLight
-  const hemisphereLight = new DefaultObject(
+  const hemisphereLight = new UpdateObject(
     new THREE.HemisphereLight(0xff0000, 0x0000ff, 0),
     {
       debug: (object, gui) => {
@@ -90,7 +89,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // PointLight
-  const pointLight = new DefaultObject(
+  const pointLight = new UpdateObject(
     new THREE.PointLight(0xff9000, 0, 0, 0.5),
     {
       draw: (object) => {
@@ -104,7 +103,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // RectAreaLight
-  const rectAreaLight = new DefaultObject(
+  const rectAreaLight = new UpdateObject(
     new THREE.RectAreaLight(0x4e00ff, 0, 2, 2),
     {
       draw: (object) => {
@@ -122,7 +121,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
   );
 
   // SpotLight
-  const spotLight = new DefaultObject(
+  const spotLight = new UpdateObject(
     new THREE.SpotLight(0x78ff00, 0, 10, Math.PI * 0.1, 0.25, 1),
     {
       draw: (object) => {

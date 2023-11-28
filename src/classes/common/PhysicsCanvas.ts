@@ -1,14 +1,18 @@
-import DefaultCanvas from "./DefaultCanvas";
+import DefaultCanvas, { DefaultCanvasOptions } from "./DefaultCanvas";
 import * as THREE from "three";
-import { World, WorldOptions } from "cannon-es";
+import * as CANNON from "cannon-es";
 
 class PhysicsCanvas extends DefaultCanvas {
-  word: World;
+  word: CANNON.World;
   _oldElapsedTime: number;
 
-  constructor(canvas: HTMLCanvasElement, options?: WorldOptions) {
-    super(canvas);
-    this.word = new World(options);
+  constructor(
+    canvas: HTMLCanvasElement,
+    options?: DefaultCanvasOptions,
+    wordOptions?: CANNON.WorldOptions
+  ) {
+    super(canvas, options);
+    this.word = new CANNON.World(wordOptions);
     this._oldElapsedTime = 0;
   }
 
@@ -25,7 +29,7 @@ class PhysicsCanvas extends DefaultCanvas {
     this.oldElapsedTime = elapsedTime;
     this.word.step(1 / 60, deltaTime, 3);
     // canvas.word.fixedStep();
-  };
+  }
 
   public run() {
     // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;

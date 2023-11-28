@@ -1,86 +1,30 @@
 import PhysicsCanvas from "classes/common/PhysicsCanvas";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
+import PhysicUpdateObject from "./common/PhysicUpdateObject";
 
 class LearnPhysicsCanvas extends PhysicsCanvas {
-  sphere: THREE.Mesh<
-    THREE.SphereGeometry,
-    THREE.MeshStandardMaterial,
-    THREE.Object3DEventMap
-  >;
-  sphereBody: CANNON.Body;
+  static options = {
+    cameraPositon: { x: -5, y: 5, z: 5 },
+  };
 
-  static createAmbientLight() {
-    return new THREE.AmbientLight(0xffffff, 0.7);
-  }
-
-  static createDirectionalLight() {
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.set(1024, 1024);
-    directionalLight.shadow.camera.far = 15;
-    directionalLight.shadow.camera.left = -7;
-    directionalLight.shadow.camera.top = 7;
-    directionalLight.shadow.camera.right = 7;
-    directionalLight.shadow.camera.bottom = -7;
-    directionalLight.position.set(5, 5, 5);
-
-    return directionalLight;
-  }
-
-  static createFloor(
-    environmentMapTexture: THREE.CubeTexture
-  ): [
-    THREE.Mesh<
-      THREE.PlaneGeometry,
-      THREE.MeshStandardMaterial,
-      THREE.Object3DEventMap
-    >,
-    CANNON.Body
-  ] {
-    const FLOOR_ROTATION_X = -Math.PI / 2;
-    const floorShape = new CANNON.Plane();
-    const floorBody = new CANNON.Body({
-      type: CANNON.Body.STATIC,
-      shape: floorShape,
-    });
-    floorBody.quaternion.setFromEuler(FLOOR_ROTATION_X, 0, 0);
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshStandardMaterial({
-        color: "#777777",
-        metalness: 0.3,
-        roughness: 0.4,
-        envMap: environmentMapTexture,
-        envMapIntensity: 0.5,
-        side: THREE.DoubleSide,
-      })
-    );
-    floor.receiveShadow = true;
-    floor.rotation.x = FLOOR_ROTATION_X;
-
-    return [floor, floorBody];
-  }
+  static wordOptions: CANNON.WorldOptions = {
+    gravity: new CANNON.Vec3(0, -9.82, 0),
+  };
 
   static createSphere(
+    radius: number,
+    { x, y, z }: { x: number; y: number; z: number },
     environmentMapTexture: THREE.CubeTexture
-  ): [
-    THREE.Mesh<
-      THREE.SphereGeometry,
-      THREE.MeshStandardMaterial,
-      THREE.Object3DEventMap
-    >,
-    CANNON.Body
-  ] {
-    const SPHERE_RADIUS = 0.5;
-    const sphereShape = new CANNON.Sphere(SPHERE_RADIUS);
+  ) {
+    const sphereShape = new CANNON.Sphere(radius);
     const sphereBody = new CANNON.Body({
-      mass: 5,
-      position: new CANNON.Vec3(0, 10, 0),
+      mass: 1,
+      position: new CANNON.Vec3(x, y, z),
       shape: sphereShape,
     });
     const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(SPHERE_RADIUS, 32, 32),
+      new THREE.SphereGeometry(radius, 32, 32),
       new THREE.MeshStandardMaterial({
         metalness: 0.3,
         roughness: 0.4,
@@ -90,20 +34,25 @@ class LearnPhysicsCanvas extends PhysicsCanvas {
     );
 
     sphere.castShadow = true;
-    sphere.position.y = 0.0;
+    sphere.position.set(x, y, z);
 
-    return [sphere, sphereBody];
+    return new PhysicUpdateObject(sphere, sphereBody);
   }
 
   constructor(canvas: HTMLCanvasElement) {
-    const options: CANNON.WorldOptions = {
-      gravity: new CANNON.Vec3(0, -9.82, 0),
-    };
-    super(canvas, options);
+    super(canvas, LearnPhysicsCanvas.options, LearnPhysicsCanvas.wordOptions);
 
     // Lights
-    const ambientLight = LearnPhysicsCanvas.createAmbientLight();
-    const directionalLight = LearnPhysicsCanvas.createDirectionalLight();
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.set(1024, 1024);
+    directionalLight.shadow.camera.far = 15;
+    directionalLight.shadow.camera.left = -7;
+    directionalLight.shadow.camera.top = 7;
+    directionalLight.shadow.camera.right = 7;
+    directionalLight.shadow.camera.bottom = -7;
+    directionalLight.position.set(5, 5, 5);
 
     // Textures
     const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -130,42 +79,50 @@ class LearnPhysicsCanvas extends PhysicsCanvas {
     this.word.defaultContactMaterial = physicsContactMaterial;
 
     // Floor
-    const [floor, floorBody] = LearnPhysicsCanvas.createFloor(
-      environmentMapTexture
+    const FLOOR_ROTATION_X = -Math.PI / 2;
+    const floorShape = new CANNON.Plane();
+    const floorBody = new CANNON.Body({
+      type: CANNON.Body.STATIC,
+      shape: floorShape,
+    });
+    floorBody.quaternion.setFromEuler(FLOOR_ROTATION_X, 0, 0);
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(10, 10),
+      new THREE.MeshStandardMaterial({
+        color: "#777777",
+        metalness: 0.3,
+        roughness: 0.4,
+        envMap: environmentMapTexture,
+        envMapIntensity: 0.5,
+        side: THREE.DoubleSide,
+      })
     );
+    floor.receiveShadow = true;
+    floor.rotation.x = FLOOR_ROTATION_X;
     this.word.addBody(floorBody);
 
     // Sphere
-    const [sphere, sphereBody] = LearnPhysicsCanvas.createSphere(
-      environmentMapTexture
-    );
-    this.word.addBody(sphereBody);
-    this.sphere = sphere;
-    this.sphereBody = sphereBody;
+    const spheres = [
+      LearnPhysicsCanvas.createSphere(
+        0.5,
+        { x: 0, y: 3, z: 0 },
+        environmentMapTexture
+      ),
+    ];
 
-    this.addToScene([ambientLight, directionalLight, floor, sphere]);
-  }
+    this.addToScene([ambientLight, directionalLight, floor]);
 
-  protected customAnimate(elapsedTime: number) {
-    super.customAnimate(elapsedTime);
-
-    this.sphereBody.applyForce(
-      new CANNON.Vec3(-0.5, 0, 0),
-      this.sphereBody.position
-    );
-
-    this.sphere.position.set(
-      this.sphereBody.position.x,
-      this.sphereBody.position.y,
-      this.sphereBody.position.z
-    );
+    for (const sphere of spheres) {
+      this.addObject([sphere]);
+      this.word.addBody(sphere.body);
+    }
   }
 
   public run() {
-    this.setCameraPosition({ x: -5, y: 5, z: 5 });
     // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     super.run();
   }
 }

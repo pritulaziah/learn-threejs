@@ -1,22 +1,23 @@
 import { GUI } from "dat.gui";
-import { IDefaultObject } from "types/objects";
+import { IUpdateObject } from "types/objects";
 
-export interface Options<T> {
+type UpdateObjectOptions<T extends THREE.Object3D> = {
   draw?: (object: T) => void;
   update?: (object: T, delta: number) => void;
   debug?: (object: T, gui: GUI) => void;
   helper?: (object: T) => THREE.Object3D | THREE.Object3D[];
-}
+};
 
-class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
-  implements IDefaultObject<T>
-{
+class UpdateObject<T extends THREE.Object3D = THREE.Object3D> implements IUpdateObject<T> {
   object: T;
-  options: Options<T>;
+  options: UpdateObjectOptions<T>;
 
-  constructor(object: T, options: Options<T> = {}) {
+  constructor(object: T, options: UpdateObjectOptions<T> = {}) {
     this.object = object;
     this.options = options;
+  }
+
+  draw() {
     this.options?.draw?.(this.object);
   }
 
@@ -33,4 +34,4 @@ class Default3DObject<T extends THREE.Object3D = THREE.Object3D>
   }
 }
 
-export default Default3DObject;
+export default UpdateObject;

@@ -1,7 +1,7 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
-import DefaultObject from "classes/common/DefaultObject";
+import UpdateObject from "classes/common/UpdateObject";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 
 const WORLD_SIZE = 20;
@@ -16,12 +16,13 @@ const FOG_COLOR = "#262837";
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
   const textureLoader = new THREE.TextureLoader();
-  const canvas = new DefaultCanvas(canvasElement);
+  const canvas = new DefaultCanvas(canvasElement, {
+    cameraPositon: { x: 4, y: 2, z: 5 },
+  });
   canvas.scene.fog = new THREE.Fog(FOG_COLOR, 1, 15);
   canvas.renderer.setClearColor(FOG_COLOR);
   canvas.renderer.shadowMap.enabled = true;
   canvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  canvas.setCameraPosition({ x: 4, y: 2, z: 5 });
   Promise.all([
     textureLoader.loadAsync("assets/textures/door/color.jpg"),
     textureLoader.loadAsync("assets/textures/door/alpha.jpg"),
@@ -71,7 +72,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       floorTexture.wrapT = THREE.RepeatWrapping;
     }
 
-    const floor = new DefaultObject(
+    const floor = new UpdateObject(
       new THREE.Mesh(
         new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE),
         new THREE.MeshStandardMaterial({
@@ -196,7 +197,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       object.shadow.mapSize.height = 256;
     }
     const light = new THREE.PointLight("#ffffff", 2, 3);
-    const ghost1 = new DefaultObject(light.clone(), {
+    const ghost1 = new UpdateObject(light.clone(), {
       draw: drawGhost,
       update(object, delta) {
         const angle = delta * 0.5;
@@ -205,7 +206,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         object.position.z = Math.sin(angle) * 4;
       },
     });
-    const ghost2 = new DefaultObject(light.clone(), {
+    const ghost2 = new UpdateObject(light.clone(), {
       draw: drawGhost,
       update(object, delta) {
         const angle = delta * -0.32;
@@ -214,7 +215,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
         object.position.z = Math.sin(angle) * 5;
       },
     });
-    const ghost3 = new DefaultObject(light.clone(), {
+    const ghost3 = new UpdateObject(light.clone(), {
       draw: drawGhost,
       update(object, delta) {
         const angle = delta * 0.18;
@@ -227,13 +228,13 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     // Add all
     house.add(walls, roof, door, bushes, graves, doorLight);
     // Add to canvas
-    canvas.addObject([floor, ...ghosts, new DefaultObject(house)]);
+    canvas.addObject([floor, ...ghosts, new UpdateObject(house)]);
   });
 
   // Lights
   const lightColor = "#b9d5ff";
   const lightIntensity = 0.12;
-  const ambientLight = new DefaultObject(
+  const ambientLight = new UpdateObject(
     new THREE.AmbientLight(lightColor, lightIntensity),
     {
       debug(object, gui) {
@@ -241,7 +242,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       },
     }
   );
-  const moonLight = new DefaultObject(
+  const moonLight = new UpdateObject(
     new THREE.DirectionalLight(lightColor, lightIntensity),
     {
       draw(object) {

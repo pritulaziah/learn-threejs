@@ -2,16 +2,14 @@ import Canvas from "components/Canvas";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 import * as THREE from "three";
 import useCanvas from "hooks/useCanvas";
-import DefaultObject from "classes/common/DefaultObject";
+import UpdateObject from "classes/common/UpdateObject";
 
 const COUNT_PARTICLES = 20000;
 const RANGE = 10;
 const mathUtils = THREE.MathUtils;
 
 const initCanvas = (canvasElement: HTMLCanvasElement) => {
-  const canvas = new DefaultCanvas(canvasElement);
-  canvas.setCameraPosition({ z: 3 });
-
+  const canvas = new DefaultCanvas(canvasElement, { cameraPositon: { z: 3 }});
   const textureLoader = new THREE.TextureLoader();
   const particleTexture = textureLoader.load("assets/textures/particles/2.png");
   const geometry = new THREE.BufferGeometry();
@@ -48,7 +46,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     // blending: THREE.AdditiveBlending,
     vertexColors: true,
   });
-  const particles = new DefaultObject(new THREE.Points(geometry, material), {
+  const particles = new UpdateObject(new THREE.Points(geometry, material), {
     debug(object, gui) {
       const folder = gui.addFolder("Points");
       folder
