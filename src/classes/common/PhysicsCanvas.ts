@@ -1,10 +1,11 @@
-import DefaultCanvas, { DefaultCanvasOptions } from "./DefaultCanvas";
-import * as THREE from "three";
 import * as CANNON from "cannon-es";
+import DefaultCanvas, { DefaultCanvasOptions } from "classes/common/DefaultCanvas";
+import PhysicObject from "classes/common/PhysicEntity";
 
 class PhysicsCanvas extends DefaultCanvas {
-  word: CANNON.World;
-  _oldElapsedTime: number;
+  public word: CANNON.World;
+
+  override entities: PhysicObject[] = [];
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -13,8 +14,9 @@ class PhysicsCanvas extends DefaultCanvas {
   ) {
     super(canvas, options);
     this.word = new CANNON.World(wordOptions);
-    this._oldElapsedTime = 0;
   }
+
+  private _oldElapsedTime = 0;
 
   get oldElapsedTime() {
     return this._oldElapsedTime;
@@ -31,11 +33,11 @@ class PhysicsCanvas extends DefaultCanvas {
     // canvas.word.fixedStep();
   }
 
-  public run() {
-    // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    super.run();
+  protected addEntitiesToScene() {
+    for (const element of this.entities) {
+      element.addToWorld(this.word);
+      element.addToScene(this.scene);
+    }
   }
 }
 

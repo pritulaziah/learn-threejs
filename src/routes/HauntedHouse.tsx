@@ -1,7 +1,7 @@
 import Canvas from "components/Canvas";
 import useCanvas from "hooks/useCanvas";
 import * as THREE from "three";
-import UpdateObject from "classes/common/UpdateObject";
+// import UpdateObject from "classes/common/UpdateObject";
 import DefaultCanvas from "classes/common/DefaultCanvas";
 
 const WORLD_SIZE = 20;
@@ -57,7 +57,7 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       grassNormalTexture,
       grassRoughnessTexture,
     ] = textures;
-    const house = new THREE.Group();
+    // const house = new THREE.Group();
     // Floor
     const floorTextures = [
       grassColorTexture,
@@ -72,31 +72,31 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
       floorTexture.wrapT = THREE.RepeatWrapping;
     }
 
-    const floor = new UpdateObject(
-      new THREE.Mesh(
-        new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE),
-        new THREE.MeshStandardMaterial({
-          map: grassColorTexture,
-          aoMap: grassAmbientOcclusionTexture,
-          normalMap: grassNormalTexture,
-          roughnessMap: grassRoughnessTexture,
-          side: THREE.DoubleSide,
-        })
-      ),
-      {
-        draw(object) {
-          object.receiveShadow = true;
-          object.geometry.attributes.uv2 = new THREE.Float32BufferAttribute(
-            (
-              object.geometry.attributes.uv as THREE.Float32BufferAttribute
-            ).array,
-            2
-          );
-          object.rotation.x = -Math.PI * 0.5;
-          object.position.y = 0;
-        },
-      }
-    );
+    // const floor = new UpdateObject(
+    //   new THREE.Mesh(
+    //     new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE),
+    //     new THREE.MeshStandardMaterial({
+    //       map: grassColorTexture,
+    //       aoMap: grassAmbientOcclusionTexture,
+    //       normalMap: grassNormalTexture,
+    //       roughnessMap: grassRoughnessTexture,
+    //       side: THREE.DoubleSide,
+    //     })
+    //   ),
+    //   {
+    //     draw(object) {
+    //       object.receiveShadow = true;
+    //       object.geometry.attributes.uv2 = new THREE.Float32BufferAttribute(
+    //         (
+    //           object.geometry.attributes.uv as THREE.Float32BufferAttribute
+    //         ).array,
+    //         2
+    //       );
+    //       object.rotation.x = -Math.PI * 0.5;
+    //       object.position.y = 0;
+    //     },
+    //   }
+    // );
     // Walls
     const walls = new THREE.Mesh(
       new THREE.BoxGeometry(HOUSE_WIDTH, HOUSE_HEIGHT, HOUSE_WIDTH),
@@ -191,77 +191,77 @@ const initCanvas = (canvasElement: HTMLCanvasElement) => {
     doorLight.shadow.mapSize.height = 256;
     doorLight.shadow.camera.far = 7;
     // Ghosts
-    function drawGhost(object: THREE.PointLight) {
-      object.castShadow = true;
-      object.shadow.mapSize.width = 256;
-      object.shadow.mapSize.height = 256;
-    }
-    const light = new THREE.PointLight("#ffffff", 2, 3);
-    const ghost1 = new UpdateObject(light.clone(), {
-      draw: drawGhost,
-      update(object, delta) {
-        const angle = delta * 0.5;
-        object.position.x = Math.cos(angle) * 4;
-        object.position.y = Math.sin(delta * 3);
-        object.position.z = Math.sin(angle) * 4;
-      },
-    });
-    const ghost2 = new UpdateObject(light.clone(), {
-      draw: drawGhost,
-      update(object, delta) {
-        const angle = delta * -0.32;
-        object.position.x = Math.cos(angle) * 5;
-        object.position.y = Math.sin(delta * 4) + Math.sin(delta * 2.5);
-        object.position.z = Math.sin(angle) * 5;
-      },
-    });
-    const ghost3 = new UpdateObject(light.clone(), {
-      draw: drawGhost,
-      update(object, delta) {
-        const angle = delta * 0.18;
-        object.position.x = Math.cos(angle) * (7 + Math.sin(delta * 0.32));
-        object.position.y = Math.sin(delta * 5) + Math.sin(delta * 2);
-        object.position.z = Math.sin(angle) * (7 + Math.sin(delta * 2.5));
-      },
-    });
-    const ghosts = [ghost1, ghost2, ghost3];
+    // function drawGhost(object: THREE.PointLight) {
+    //   object.castShadow = true;
+    //   object.shadow.mapSize.width = 256;
+    //   object.shadow.mapSize.height = 256;
+    // }
+    // const light = new THREE.PointLight("#ffffff", 2, 3);
+    // const ghost1 = new UpdateObject(light.clone(), {
+    //   draw: drawGhost,
+    //   update(object, delta) {
+    //     const angle = delta * 0.5;
+    //     object.position.x = Math.cos(angle) * 4;
+    //     object.position.y = Math.sin(delta * 3);
+    //     object.position.z = Math.sin(angle) * 4;
+    //   },
+    // });
+    // const ghost2 = new UpdateObject(light.clone(), {
+    //   draw: drawGhost,
+    //   update(object, delta) {
+    //     const angle = delta * -0.32;
+    //     object.position.x = Math.cos(angle) * 5;
+    //     object.position.y = Math.sin(delta * 4) + Math.sin(delta * 2.5);
+    //     object.position.z = Math.sin(angle) * 5;
+    //   },
+    // });
+    // const ghost3 = new UpdateObject(light.clone(), {
+    //   draw: drawGhost,
+    //   update(object, delta) {
+    //     const angle = delta * 0.18;
+    //     object.position.x = Math.cos(angle) * (7 + Math.sin(delta * 0.32));
+    //     object.position.y = Math.sin(delta * 5) + Math.sin(delta * 2);
+    //     object.position.z = Math.sin(angle) * (7 + Math.sin(delta * 2.5));
+    //   },
+    // });
+    // const ghosts = [ghost1, ghost2, ghost3];
     // Add all
-    house.add(walls, roof, door, bushes, graves, doorLight);
+    // house.add(walls, roof, door, bushes, graves, doorLight);
     // Add to canvas
-    canvas.addObject([floor, ...ghosts, new UpdateObject(house)]);
+    // canvas.addObject([floor, ...ghosts, new UpdateObject(house)]);
   });
 
   // Lights
-  const lightColor = "#b9d5ff";
-  const lightIntensity = 0.12;
-  const ambientLight = new UpdateObject(
-    new THREE.AmbientLight(lightColor, lightIntensity),
-    {
-      debug(object, gui) {
-        gui.addFolder("AmbientLight").add(object, "intensity", 0, 1, 0.001);
-      },
-    }
-  );
-  const moonLight = new UpdateObject(
-    new THREE.DirectionalLight(lightColor, lightIntensity),
-    {
-      draw(object) {
-        object.position.set(4, 5, -2);
-        object.castShadow = true;
-      },
-      debug(object, gui) {
-        const moonFolder = gui.addFolder("Moon");
-        moonFolder.add(object, "intensity", 0, 1, 0.001);
-        moonFolder.add(object.position, "x", -5, 5, 0.001);
-        moonFolder.add(object.position, "y", -5, 5, 0.001);
-        moonFolder.add(object.position, "z", -5, 5, 0.001);
-      },
-      helper(object) {
-        return new THREE.DirectionalLightHelper(object);
-      },
-    }
-  );
-  canvas.addObject([ambientLight, moonLight]);
+  // const lightColor = "#b9d5ff";
+  // const lightIntensity = 0.12;
+  // const ambientLight = new UpdateObject(
+  //   new THREE.AmbientLight(lightColor, lightIntensity),
+  //   {
+  //     debug(object, gui) {
+  //       gui.addFolder("AmbientLight").add(object, "intensity", 0, 1, 0.001);
+  //     },
+  //   }
+  // );
+  // const moonLight = new UpdateObject(
+  //   new THREE.DirectionalLight(lightColor, lightIntensity),
+  //   {
+  //     draw(object) {
+  //       object.position.set(4, 5, -2);
+  //       object.castShadow = true;
+  //     },
+  //     debug(object, gui) {
+  //       const moonFolder = gui.addFolder("Moon");
+  //       moonFolder.add(object, "intensity", 0, 1, 0.001);
+  //       moonFolder.add(object.position, "x", -5, 5, 0.001);
+  //       moonFolder.add(object.position, "y", -5, 5, 0.001);
+  //       moonFolder.add(object.position, "z", -5, 5, 0.001);
+  //     },
+  //     helper(object) {
+  //       return new THREE.DirectionalLightHelper(object);
+  //     },
+  //   }
+  // );
+  // canvas.addObject([ambientLight, moonLight]);
 
   return canvas;
 };

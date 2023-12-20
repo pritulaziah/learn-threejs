@@ -1,7 +1,8 @@
 import PhysicsCanvas from "classes/common/PhysicsCanvas";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import PhysicUpdateObject from "./common/PhysicUpdateObject";
+import PhysicFloor from "./PhysicFloor";
+import PhysicSphere from "./PhysicSphere";
 
 class LearnPhysicsCanvas extends PhysicsCanvas {
   static options = {
@@ -12,36 +13,11 @@ class LearnPhysicsCanvas extends PhysicsCanvas {
     gravity: new CANNON.Vec3(0, -9.82, 0),
   };
 
-  static createSphere(
-    radius: number,
-    { x, y, z }: { x: number; y: number; z: number },
-    environmentMapTexture: THREE.CubeTexture
-  ) {
-    const sphereShape = new CANNON.Sphere(radius);
-    const sphereBody = new CANNON.Body({
-      mass: 1,
-      position: new CANNON.Vec3(x, y, z),
-      shape: sphereShape,
-    });
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(radius, 32, 32),
-      new THREE.MeshStandardMaterial({
-        metalness: 0.3,
-        roughness: 0.4,
-        envMap: environmentMapTexture,
-        envMapIntensity: 0.5,
-      })
-    );
-
-    sphere.castShadow = true;
-    sphere.position.set(x, y, z);
-
-    return new PhysicUpdateObject(sphere, sphereBody);
-  }
-
   constructor(canvas: HTMLCanvasElement) {
     super(canvas, LearnPhysicsCanvas.options, LearnPhysicsCanvas.wordOptions);
+  }
 
+  protected init() {
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
@@ -79,51 +55,23 @@ class LearnPhysicsCanvas extends PhysicsCanvas {
     this.word.defaultContactMaterial = physicsContactMaterial;
 
     // Floor
-    const FLOOR_ROTATION_X = -Math.PI / 2;
-    const floorShape = new CANNON.Plane();
-    const floorBody = new CANNON.Body({
-      type: CANNON.Body.STATIC,
-      shape: floorShape,
-    });
-    floorBody.quaternion.setFromEuler(FLOOR_ROTATION_X, 0, 0);
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshStandardMaterial({
-        color: "#777777",
-        metalness: 0.3,
-        roughness: 0.4,
-        envMap: environmentMapTexture,
-        envMapIntensity: 0.5,
-        side: THREE.DoubleSide,
-      })
-    );
-    floor.receiveShadow = true;
-    floor.rotation.x = FLOOR_ROTATION_X;
-    this.word.addBody(floorBody);
+    const floor = new PhysicFloor({ envMap: environmentMapTexture });
 
     // Sphere
     const spheres = [
-      LearnPhysicsCanvas.createSphere(
-        0.5,
-        { x: 0, y: 3, z: 0 },
-        environmentMapTexture
-      ),
+      new PhysicSphere({
+        radius: 0.5,
+        position: { x: 0, y: 3, z: 0 },
+        envMap: environmentMapTexture,
+      }),
     ];
 
-    this.addToScene([ambientLight, directionalLight, floor]);
+    this.addStaticEntity([ambientLight, directionalLight]);
+    this.addEntity([...spheres, floor]);
 
-    for (const sphere of spheres) {
-      this.addObject([sphere]);
-      this.word.addBody(sphere.body);
-    }
-  }
-
-  public run() {
     // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-    super.run();
   }
 }
 

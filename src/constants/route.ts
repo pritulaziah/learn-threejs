@@ -6,7 +6,7 @@ enum Routes {
   HauntedHouse = "haunted-house",
   Particles = "particles",
   GalaxyGenerator = 'galaxy-generator',
-  Physics = 'physics',
+  LearnPhysics = 'lear-physics',
 }
 
 export default Routes;

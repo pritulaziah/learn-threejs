@@ -129,7 +129,7 @@ class GalaxyGeneratorCanvas extends DefaultCanvas {
   }
 
   run() {
-    this.addToScene([this.particles]);
+    this.scene.add(this.particles);
     this.setPositon();
     super.run();
   }

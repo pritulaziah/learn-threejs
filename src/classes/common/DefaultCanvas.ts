@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { IUpdateObject } from "types/objects";
 import * as dat from "dat.gui";
 import toArray from "utils/toArray";
+import Entity from "./Entity";
 
 export type DefaultCanvasOptions = {
   cameraPositon?: { x?: number, y?: number, z?: number };
@@ -17,9 +17,10 @@ class DefaultCanvas {
   private controls: OrbitControls;
   private clock: THREE.Clock;
   private requestId?: number;
-  public objectToUpdate: IUpdateObject[];
   public gui: dat.GUI;
   public stats: Stats;
+
+  protected entities: Entity[] = [];
 
   constructor(canvas: HTMLCanvasElement, options?: DefaultCanvasOptions) {
     const { cameraPositon } = options || {};
@@ -39,12 +40,10 @@ class DefaultCanvas {
       1000
     );
     this.camera.position.set(x, y, z);
-    this.objectToUpdate = [];
     this.renderer = new THREE.WebGLRenderer({ canvas });
     this.clock = new THREE.Clock();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.gui = new dat.GUI();
-
     this.stats = new Stats();
   }
 
@@ -108,7 +107,7 @@ class DefaultCanvas {
 
     this.customAnimate(elapsedTime);
 
-    for (const element of this.objectToUpdate) {
+    for (const element of this.entities) {
       element.update(elapsedTime);
     }
 
@@ -117,32 +116,20 @@ class DefaultCanvas {
     this.stats.update();
   };
 
-  public addToScene(objects: THREE.Object3D[]) {
-    this.scene.add(...objects);
+  protected addEntitiesToScene() {
+    for (const element of this.entities) {
+      element.addToScene(this.scene);
+    }
   }
 
-  public addObject(object: IUpdateObject[] | IUpdateObject) {
+  public addEntity(object: Entity[] | Entity) {
     const objectArray = toArray(object);
-    this.objectToUpdate.push(...objectArray);
-    const helpers = objectArray.reduce<THREE.Object3D[]>(
-      (result, obj) => {
-        const currentHelper = obj.helper();
-
-        if (currentHelper) {
-          const currentHelperArray = toArray(currentHelper);
-          result.push(...currentHelperArray);
-        }
-
-        return result;
-      },
-      []
-    );
-    this.addToScene([...objectArray.map((obj) => obj.object), ...helpers]);
+    this.entities.push(...objectArray);
   }
 
-  public addStaticObject(object: THREE.Object3D | THREE.Object3D[]) {
+  public addStaticEntity(object: THREE.Object3D | THREE.Object3D[]) {
     const objectArray = toArray(object);
-    this.addToScene(objectArray);
+    this.scene.add(...objectArray);
   }
 
   public destroy() {
@@ -155,17 +142,17 @@ class DefaultCanvas {
     this.requestId != null && cancelAnimationFrame(this.requestId);
   }
 
-  public createDebug() {
-    for (let obj of this.objectToUpdate) {
-      obj.debug(this.gui);
-    }
-  }
+  public createDebug() {}
+
+  protected init() {}
 
   public run() {
+    this.init();
+    this.addEntitiesToScene();
     this.createDebug();
     this.setSize();
 
-    for (const element of this.objectToUpdate) {
+    for (const element of this.entities) {
       element.draw();
     }
 
